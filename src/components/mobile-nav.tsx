@@ -57,12 +57,13 @@ export function MobileNav({
           </div>
           <nav className="flex flex-col gap-1 overflow-y-auto p-3">
             {links.map((link, index) => (
-              <DialogPrimitive.Close asChild key={link.slug || "all"}>
-                <motion.div
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.25, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
-                >
+              <motion.div
+                key={link.slug || "all"}
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.25, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <DialogPrimitive.Close asChild>
                   <Link
                     href={link.slug ? `/catalog?category=${link.slug}` : "/catalog"}
                     className={cn(
@@ -74,8 +75,8 @@ export function MobileNav({
                   >
                     {link.name}
                   </Link>
-                </motion.div>
-              </DialogPrimitive.Close>
+                </DialogPrimitive.Close>
+              </motion.div>
             ))}
           </nav>
         </DialogPrimitive.Content>
