@@ -3,6 +3,9 @@
     "title": "Leaf & Cup — Online-Teeladen",
     "description": "Tauchen Sie ein in die Welt des Geschmacks und Aromas. Wir haben die besten Teesorten, gemütliche Tassen und Teekannen gesammelt, damit jede Teeparty zu Hause Freude bringt."
   },
+  "loader": {
+    "text": "Wird geladen…"
+  },
   "about": {
     "title": "Über uns",
     "metaTitle": "Über uns — Leaf & Cup",

@@ -3,6 +3,9 @@
     "title": "Leaf & Cup — Online Tea Shop",
     "description": "Immerse yourself in the world of taste and aroma. We have gathered the best tea varieties, cozy cups, and teapots so that every home tea party brings joy."
   },
+  "loader": {
+    "text": "Loading…"
+  },
   "about": {
     "title": "About Us",
     "metaTitle": "About Us — Leaf & Cup",
