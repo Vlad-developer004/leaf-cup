@@ -29,7 +29,7 @@ export default async function FavoritesPage({ params }: { params: Promise<{ loca
     redirect("/sign-in");
   }
 
-  const products = await getFavoriteProducts(session.user.id);
+  const products = await getFavoriteProducts(session.user.id, locale);
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-12 md:py-16">

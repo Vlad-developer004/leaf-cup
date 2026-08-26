@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { getAppliedPromo } from "@/lib/promo";
+import { localizeProducts } from "@/lib/translations";
 import { CheckoutForm } from "./checkout-form";
 import initTranslations from "@/lib/i18n";
 
@@ -24,15 +25,23 @@ export default async function CheckoutPage({ params }: { params: Promise<{ local
     redirect("/sign-in?callbackUrl=/checkout");
   }
 
-  const [cart, defaultAddress] = await Promise.all([
+  const [rawCart, defaultAddress] = await Promise.all([
     getCart(),
     prisma.address.findFirst({
       where: { userId: session.user.id, isDefault: true },
     }),
   ]);
-  if (cart.items.length === 0) {
+  if (rawCart.items.length === 0) {
     redirect("/cart");
   }
+  const localizedProducts = await localizeProducts(
+    rawCart.items.map((item) => item.product),
+    locale
+  );
+  const cart = {
+    ...rawCart,
+    items: rawCart.items.map((item, index) => ({ ...item, product: localizedProducts[index] })),
+  };
 
   const currencies = new Set(cart.items.map((item) => item.product.currency));
   const mixedCurrencies = currencies.size > 1;

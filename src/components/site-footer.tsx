@@ -4,7 +4,7 @@ import { LogoMark } from "@/components/logo-mark";
 import initTranslations from "@/lib/i18n";
 
 export async function SiteFooter({ locale }: { locale: string }) {
-  const categories = await getCategories();
+  const categories = await getCategories(locale);
   const { t } = await initTranslations(locale, ["common"]);
 
   return (

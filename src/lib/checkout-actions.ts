@@ -60,10 +60,6 @@ export async function createOrder(input: ShippingInput): Promise<CreateOrderResu
     0,
   );
 
-  // Промокод перепроверяется здесь заново (не доверяем тому, что он был
-  // валиден в момент применения в корзине) — тот же принцип, что и с
-  // проверкой stock выше: между корзиной и оформлением заказа код мог
-  // истечь или исчерпать лимит использований.
   let promoCode: string | null = null;
   let discountAmount = 0;
   if (cart.promoCode) {

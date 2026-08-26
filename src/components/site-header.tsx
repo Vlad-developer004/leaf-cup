@@ -11,7 +11,7 @@ import { getCartItemCount } from "@/lib/cart";
 import initTranslations from "@/lib/i18n";
 
 export async function SiteHeader({ locale }: { locale: string }) {
-  const [categories, cartCount] = await Promise.all([getCategories(), getCartItemCount()]);
+  const [categories, cartCount] = await Promise.all([getCategories(locale), getCartItemCount()]);
   const { t } = await initTranslations(locale, ["common"]);
 
   return (

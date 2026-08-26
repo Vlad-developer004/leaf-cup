@@ -16,15 +16,16 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Reveal } from "@/components/reveal";
+import { localizeProduct } from "@/lib/translations";
 import initTranslations from "@/lib/i18n";
 
-async function getProduct(slug: string) {
+async function getProduct(slug: string, locale: string) {
   const product = await prisma.product.findUnique({
     where: { slug },
     include: { category: true },
   });
   if (!product || !product.isActive) return null;
-  return product;
+  return localizeProduct(product, locale);
 }
 
 export async function generateMetadata({
@@ -34,7 +35,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug, locale } = await params;
   const { t } = await initTranslations(locale, ["common"]);
-  const product = await getProduct(slug);
+  const product = await getProduct(slug, locale);
   return { title: product ? `${product.name} — Leaf & Cup` : t("product.notFoundTitle") };
 }
 
@@ -45,7 +46,7 @@ export default async function ProductPage({
 }) {
   const { slug, locale } = await params;
   const { t } = await initTranslations(locale, ["common"]);
-  const product = await getProduct(slug);
+  const product = await getProduct(slug, locale);
   if (!product) notFound();
 
   const session = await auth();

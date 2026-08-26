@@ -6,17 +6,11 @@ import { auth } from "@/auth";
 import { getOrCreateCart } from "@/lib/cart";
 import { validatePromoCode } from "@/lib/promo";
 
-// Вызывается сразу после успешного входа/регистрации, чтобы гостевая корзина
-// (если она была) сразу же слилась с корзиной аккаунта — иначе слияние
-// произойдёт лениво при первом добавлении/изменении товара в корзине.
 export async function syncCartOnLogin() {
   await getOrCreateCart();
   revalidatePath("/", "layout");
 }
 
-// Количество в корзине никогда не должно превышать наличие на складе —
-// клэмпится здесь, а не только в UI, потому что это последняя точка перед
-// записью в БД (клиент мог прислать что угодно).
 export async function addToCart(productId: string, quantity = 1) {
   const cart = await getOrCreateCart();
   const [product, existing] = await Promise.all([

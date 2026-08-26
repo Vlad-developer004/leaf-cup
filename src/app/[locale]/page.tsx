@@ -16,6 +16,7 @@ import { formatPrice } from "@/lib/format";
 import { getCategoryIcon } from "@/lib/category-icons";
 import { getCategories } from "@/lib/get-categories";
 import { getFavoriteProductIds } from "@/lib/favorites";
+import { localizeProducts } from "@/lib/translations";
 import { ProductArt } from "@/components/product-art";
 import { HeroVisual } from "@/components/hero-visual";
 import { TiltCard } from "@/components/tilt-card";
@@ -26,8 +27,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale } = await params;
   const { t } = await initTranslations(locale, ["common"]);
   const session = await auth();
-  const [categories, featuredProducts, favoriteIds] = await Promise.all([
-    getCategories(),
+  const [categories, rawFeaturedProducts, favoriteIds] = await Promise.all([
+    getCategories(locale),
     prisma.product.findMany({
       where: { isFeatured: true, isActive: true },
       include: { category: true },
@@ -36,6 +37,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
     }),
     session?.user?.id ? getFavoriteProductIds(session.user.id) : Promise.resolve(new Set<string>()),
   ]);
+  const featuredProducts = await localizeProducts(rawFeaturedProducts, locale);
 
   return (
     <main className="flex flex-1 flex-col">

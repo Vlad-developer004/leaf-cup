@@ -5,9 +5,6 @@ import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-// Реальной рассылки в проекте нет (нет интеграции с email-сервисом для
-// маркетинговых писем, только транзакционные — сброс пароля, заказы).
-// Форма честно показана неактивной, а не притворяется рабочей.
 export function NewsletterForm() {
   const { t } = useTranslation();
 

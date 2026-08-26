@@ -1,6 +1,3 @@
-// Сжимает загруженное изображение на клиенте до квадратного data URL —
-// в проекте нет файлового хранилища, поэтому аватар хранится прямо в БД,
-// и его размер важно держать небольшим.
 export function resizeImageToDataUrl(file: File, maxSize = 256): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

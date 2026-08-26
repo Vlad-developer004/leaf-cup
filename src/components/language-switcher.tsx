@@ -30,7 +30,7 @@ export function LanguageSwitcher({ locale }: { locale: Locale }) {
   function switchTo(nextLocale: Locale) {
     if (nextLocale === locale) return;
 
-    // pathname всегда начинается с "/", segments[0] === ""
+
     const segments = pathname.split("/");
     if ((i18nConfig.locales as string[]).includes(segments[1])) {
       segments.splice(1, 1);

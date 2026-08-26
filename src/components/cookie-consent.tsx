@@ -15,8 +15,6 @@ export function CookieConsent() {
     try {
       if (!localStorage.getItem(STORAGE_KEY)) setVisible(true);
     } catch {
-      // localStorage может быть недоступен (приватный режим и т.п.) — тогда
-      // просто не показываем баннер повторно на каждой навигации в рамках сессии.
     }
   }, []);
 
@@ -25,7 +23,6 @@ export function CookieConsent() {
     try {
       localStorage.setItem(STORAGE_KEY, "1");
     } catch {
-      // см. комментарий выше
     }
   }
 

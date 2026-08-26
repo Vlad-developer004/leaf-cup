@@ -5,9 +5,6 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-// Аватар хранится как data URL прямо в БД — в проекте нет файлового
-// хранилища (S3 и т.п.), а изображение уже сжимается на клиенте перед
-// отправкой, так что 1.5 МБ с запасом хватает на разумный аватар.
 const MAX_IMAGE_LENGTH = 1_500_000;
 
 const profileSchema = z.object({

@@ -9,6 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { syncCartOnLogin } from "@/lib/cart-actions";
 
+function getSafeCallbackUrl(value: string | null) {
+  if (value && /^\/(?!\/)/.test(value)) {
+    return value;
+  }
+  return "/";
+}
+
 export type SignInDict = {
   emailLabel: string;
   emailPlaceholder: string;
@@ -45,7 +52,7 @@ export function SignInForm({ dict }: { dict: SignInDict }) {
     }
 
     await syncCartOnLogin();
-    router.push(searchParams.get("callbackUrl") ?? "/");
+    router.push(getSafeCallbackUrl(searchParams.get("callbackUrl")));
     router.refresh();
   }
 

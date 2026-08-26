@@ -14,12 +14,6 @@ export function calculateDiscount(promo: Pick<PromoCode, "type" | "value">, subt
   return Math.min(subtotal, promo.value);
 }
 
-// Проверяет промокод заново на каждый вызов (не доверяет ранее сохранённому
-// результату) — код мог истечь, исчерпать лимит использований или перестать
-// действовать в админке между применением в корзине и оформлением заказа.
-// Промокоды доступны только вошедшим пользователям (userId === null всегда
-// невалиден) — и каждый пользователь может использовать конкретный код
-// только один раз, это проверяется по PromoCodeRedemption.
 export async function validatePromoCode(
   rawCode: string,
   subtotal: number,
@@ -71,9 +65,6 @@ export type AppliedPromo =
   | { code: string; discountAmount: number; invalid: false }
   | { code: string; discountAmount: 0; invalid: true; error: string };
 
-// Для отображения в корзине: если код был применён, но с тех пор перестал
-// действовать, не роняем страницу — показываем предупреждение и позволяем
-// его убрать, скидка при этом не учитывается в итоге.
 export async function getAppliedPromo(
   storedCode: string | null,
   subtotal: number,

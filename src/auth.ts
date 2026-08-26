@@ -47,8 +47,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      // Google verifies email ownership, so it's safe to link a Google sign-in
-      // to an existing email/password account with the same address.
       allowDangerousEmailAccountLinking: true,
       profile(profile) {
         return {
@@ -71,10 +69,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return token;
     },
-    // Имя/аватар меняются через /account/profile после входа, а JWT не
-    // обновляется сам по себе — здесь (в отличие от edge-safe версии в
-    // auth.config.ts, которую использует proxy.ts) есть доступ к Prisma,
-    // поэтому подмешиваем свежие значения из БД при каждом чтении сессии.
     session: async (params) => {
       const session = await authConfig.callbacks.session(params);
       if (session.user?.id) {

@@ -40,10 +40,6 @@ async function clearGuestCartId() {
   store.delete(CART_COOKIE);
 }
 
-// Только для чтения — безопасно вызывать из серверных компонентов (шапка,
-// страница корзины). Next.js не разрешает менять cookie во время рендера
-// страницы, поэтому здесь ничего не создаётся и гостевая корзина не сливается
-// с корзиной аккаунта — этим занимается getOrCreateCart() ниже.
 export async function getCart() {
   const session = await auth();
 
@@ -67,10 +63,6 @@ export async function getCartItemCount() {
   return cart.items.reduce((sum, item) => sum + item.quantity, 0);
 }
 
-// Пишущая версия — вызывать только из Server Actions или Route Handlers, где
-// разрешено менять cookie. Создаёт корзину при первом обращении и, если
-// пользователь только что вошёл, а в cookie ещё жива гостевая корзина —
-// "усыновляет" её учёткой или сливает с уже существующей корзиной аккаунта.
 export async function getOrCreateCart() {
   const session = await auth();
 

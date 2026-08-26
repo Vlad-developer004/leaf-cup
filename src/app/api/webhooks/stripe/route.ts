@@ -33,9 +33,7 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   });
   if (!order || order.status !== "PENDING") return;
 
-  // updateMany + stock: { gte: quantity } вместо простого decrement — не даёт
-  // stock уйти в минус, если два заказа на один и тот же товар оплатились
-  // почти одновременно (decrement сам по себе такой гонки не видит).
+
   await prisma.$transaction(async (tx) => {
     await tx.order.update({ where: { id: order.id }, data: { status: "PAID" } });
 
@@ -54,11 +52,7 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
       },
     });
 
-    // Промокод "израсходован" только при подтверждённой оплате — если платёж
-    // не пройдёт, cart.promoCode остаётся и код можно применить повторно.
-    // Запись PromoCodeRedemption — источник истины для правила "один код на
-    // пользователя один раз" (@@unique в схеме), timesRedeemed — просто
-    // счётчик для админки.
+
     if (order.promoCode) {
       await tx.cart.update({ where: { id: order.cartId }, data: { promoCode: null } });
 
@@ -73,10 +67,7 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
             data: { timesRedeemed: { increment: 1 } },
           });
         } catch (err) {
-          // P2002 — гонка из двух почти одновременно оплаченных заказов с
-          // одним и тем же кодом у одного пользователя: запись о погашении
-          // уже есть, просто не удваиваем счётчик, остальную часть заказа
-          // (статус/склад/корзину) это не должно откатывать.
+
           if (!(err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002")) {
             throw err;
           }

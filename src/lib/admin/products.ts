@@ -2,8 +2,6 @@ import { prisma } from "@/lib/prisma";
 
 export const ADMIN_PAGE_SIZE = 15;
 
-// Ниже этого остатка товар считается "заканчивающимся" на дашборде админки —
-// произвольное, но задокументированное число, не привязано ни к чему в схеме.
 export const LOW_STOCK_THRESHOLD = 5;
 
 export async function getAdminProducts({

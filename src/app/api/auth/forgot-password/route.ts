@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   const { email } = parsed.data;
   const user = await prisma.user.findUnique({ where: { email } });
 
-  // Always respond with success, whether or not the user exists, to avoid leaking which emails are registered.
+
   if (user) {
     const rawToken = randomBytes(32).toString("hex");
     const tokenHash = createHash("sha256").update(rawToken).digest("hex");

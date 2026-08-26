@@ -12,6 +12,7 @@ import { TiltCard } from "@/components/tilt-card";
 import { Reveal } from "@/components/reveal";
 import { FavoriteButton } from "@/components/favorite-button";
 import { cn } from "@/lib/utils";
+import { localizeProducts } from "@/lib/translations";
 import initTranslations from "@/lib/i18n";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -41,7 +42,7 @@ export default async function CatalogPage({
 
   const session = await auth();
   const [categories, totalCount, favoriteIds] = await Promise.all([
-    getCategories(),
+    getCategories(locale),
     prisma.product.count({ where }),
     session?.user?.id ? getFavoriteProductIds(session.user.id) : Promise.resolve(new Set<string>()),
   ]);
@@ -49,13 +50,14 @@ export default async function CatalogPage({
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const page = Math.min(Math.max(1, Number(pageParam) || 1), totalPages);
 
-  const products = await prisma.product.findMany({
+  const rawProducts = await prisma.product.findMany({
     where,
     include: { category: true },
     orderBy: { createdAt: "asc" },
     skip: (page - 1) * PAGE_SIZE,
     take: PAGE_SIZE,
   });
+  const products = await localizeProducts(rawProducts, locale);
 
   const activeCategory = categories.find((c) => c.slug === activeSlug);
 

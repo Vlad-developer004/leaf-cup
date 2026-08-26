@@ -8,6 +8,7 @@ import { auth } from "@/auth";
 import { getCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { getAppliedPromo } from "@/lib/promo";
+import { localizeProducts } from "@/lib/translations";
 import initTranslations from "@/lib/i18n";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -21,8 +22,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function CartPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const { t } = await initTranslations(locale, ["common"]);
-  const [cart, session] = await Promise.all([getCart(), auth()]);
+  const [rawCart, session] = await Promise.all([getCart(), auth()]);
   const userId = session?.user?.id ?? null;
+  const localizedProducts = await localizeProducts(
+    rawCart.items.map((item) => item.product),
+    locale
+  );
+  const cart = {
+    ...rawCart,
+    items: rawCart.items.map((item, index) => ({ ...item, product: localizedProducts[index] })),
+  };
 
   if (cart.items.length === 0) {
     return (
@@ -44,9 +53,6 @@ export default async function CartPage({ params }: { params: Promise<{ locale: s
     totalsByCurrency.set(currency, current + item.product.priceAmount * item.quantity);
   }
 
-  // Промокод применим только когда в корзине один общий подытог в одной
-  // валюте — при разных валютах его просто не показываем (та же граница,
-  // что и на /checkout, где смешанные валюты вообще блокируют оформление).
   const currencies = [...totalsByCurrency.keys()];
   const singleCurrency = currencies.length === 1 ? currencies[0] : null;
   const subtotal = singleCurrency ? totalsByCurrency.get(singleCurrency)! : 0;

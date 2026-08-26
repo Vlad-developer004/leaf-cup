@@ -121,6 +121,32 @@ model Category {
   products Product[]
 }
 
+enum TranslatableEntity {
+  PRODUCT
+  CATEGORY
+}
+
+enum TranslatableField {
+  NAME
+  DESCRIPTION
+}
+
+// Переводы названий/описаний товаров и категорий на локали, отличные от
+// основной (ru), которая хранится прямо в Product/Category. entityId не
+// связан FK, т.к. ссылается то на Product, то на Category (полиморфно) —
+// см. getTranslationsMap() в src/lib/translations.ts.
+model Translation {
+  id         String              @id @default(cuid())
+  entityType TranslatableEntity
+  entityId   String
+  locale     String
+  field      TranslatableField
+  value      String
+
+  @@unique([entityType, entityId, locale, field])
+  @@index([entityType, entityId, locale])
+}
+
 model Product {
   id          String   @id @default(cuid())
   name        String
