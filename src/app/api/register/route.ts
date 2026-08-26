@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import * as z from "zod";
 import { prisma } from "@/lib/prisma";
 import { consumeAdminInvite } from "@/lib/admin/admin-invites";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const RegisterSchema = z.object({
   firstName: z.string().trim().min(1, "Введите имя"),
@@ -12,6 +13,12 @@ const RegisterSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const allowed = await checkRateLimit(`register:${ip}`, { max: 5, windowMs: 60 * 60 * 1000 });
+  if (!allowed) {
+    return NextResponse.json({ error: "Слишком много попыток. Попробуйте позже." }, { status: 429 });
+  }
+
   const body = await request.json().catch(() => null);
   const parsed = RegisterSchema.safeParse(body);
 

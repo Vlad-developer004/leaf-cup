@@ -6,6 +6,7 @@ import { signIn } from "next-auth/react";
 import { Link } from "@/components/localized-link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { syncCartOnLogin } from "@/lib/cart-actions";
@@ -60,7 +61,9 @@ export function RegisterForm({ dict, termsLink, privacyLink }: { dict: RegisterD
     if (!response.ok) {
       const data = await response.json().catch(() => null);
       setPending(false);
-      if (data?.error) {
+      if (typeof data?.error === "string") {
+        setFormError(data.error);
+      } else if (data?.error) {
         setErrors(data.error);
       } else {
         setFormError(dict.errorGeneric);
@@ -109,7 +112,7 @@ export function RegisterForm({ dict, termsLink, privacyLink }: { dict: RegisterD
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="password">{dict.passwordLabel}</Label>
-        <Input id="password" name="password" type="password" autoComplete="new-password" required />
+        <PasswordInput id="password" name="password" autoComplete="new-password" required />
         {errors.password ? (
           <p className="text-xs text-destructive">{errors.password[0]}</p>
         ) : (

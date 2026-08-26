@@ -1,5 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 
 generator client {
   provider = "prisma-client"
@@ -13,8 +12,7 @@ datasource db {
 enum Role {
   CUSTOMER
   ADMIN
-  // Может назначать/снимать роль ADMIN и SUPERADMIN у других — см.
-  // src/lib/admin/team-actions.ts. Всегда имеет и права обычного ADMIN.
+
   SUPERADMIN
 }
 
@@ -28,8 +26,7 @@ model User {
   role               Role      @default(CUSTOMER)
   image              String?
   phone              String?
-  // Настройки email-уведомлений — заведены с явными дефолтами по смыслу
-  // (анонсы выключены по умолчанию, напоминание о корзине включено).
+
   emailAnnouncements Boolean   @default(false)
   emailBagReminder   Boolean   @default(true)
   createdAt          DateTime  @default(now())
@@ -45,8 +42,7 @@ model User {
   promoCodeRedemptions PromoCodeRedemption[]
 }
 
-// Сохранённые адреса доставки покупателя — используются в личном кабинете
-// и подставляются как значение по умолчанию на /checkout.
+
 model Address {
   id          String   @id @default(cuid())
   userId      String
@@ -65,7 +61,7 @@ model Address {
   @@index([userId])
 }
 
-// Auth.js (NextAuth) adapter models — needed for OAuth providers (Google/Apple) later.
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -134,10 +130,7 @@ enum TranslatableField {
   DESCRIPTION
 }
 
-// Переводы названий/описаний товаров и категорий на локали, отличные от
-// основной (ru), которая хранится прямо в Product/Category. entityId не
-// связан FK, т.к. ссылается то на Product, то на Category (полиморфно) —
-// см. getTranslationsMap() в src/lib/translations.ts.
+
 model Translation {
   id         String             @id @default(cuid())
   entityType TranslatableEntity
@@ -155,8 +148,7 @@ model Product {
   name        String
   slug        String   @unique
   description String
-  // Цена хранится в минимальных единицах валюты (центы и т.п.) вместе с её
-  // кодом — товар никогда не привязан к конкретной валюте вроде рубля.
+
   priceAmount Int
   currency    String   @default("EUR")
   images      String[]
@@ -176,8 +168,7 @@ model Product {
   @@index([categoryId])
 }
 
-// Избранное — только для вошедших пользователей (в отличие от корзины, без
-// гостевой cookie-версии: список желаний осмысленно привязывать к аккаунту).
+
 model Favorite {
   id        String   @id @default(cuid())
   userId    String
@@ -191,16 +182,11 @@ model Favorite {
   @@index([userId])
 }
 
-// Корзина существует и без аккаунта (гостевая, id хранится в cookie) — при
-// входе она "усыновляется" пользователем или сливается с уже существующей
-// корзиной аккаунта, см. getOrCreateCart() в src/lib/cart.ts.
+
 model Cart {
   id        String   @id @default(cuid())
   userId    String?  @unique
-  // Хранится просто как строка (код), а не FK на PromoCode — по тому же
-  // принципу снапшота, что и OrderItem: даже если промокод потом удалят или
-  // изменят в админке, у корзины/заказа не оторвётся ссылка. Актуальность
-  // проверяется заново при каждом использовании через validatePromoCode().
+
   promoCode String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -237,9 +223,7 @@ model Order {
   userId                String
   cartId                String
   status                OrderStatus @default(PENDING)
-  // totalAmount уже учитывает скидку (это то, что реально ушло в Stripe);
-  // promoCode/discountAmount — снапшот на момент оформления заказа, для
-  // истории заказов и чека, не влияет на пересчёт при повторной оплате.
+
   totalAmount           Int
   currency              String
   promoCode             String?
@@ -260,8 +244,7 @@ model Order {
   @@index([userId])
 }
 
-// Название и цена товара сохраняются на момент заказа (снапшот) — если товар
-// потом изменится или будет удалён, история заказа не должна "переписаться".
+
 model OrderItem {
   id          String  @id @default(cuid())
   orderId     String
@@ -281,21 +264,18 @@ enum PromoDiscountType {
   FIXED
 }
 
-// Код хранится в верхнем регистре (нормализуется в src/lib/promo.ts) —
-// сравнение всегда регистронезависимое для покупателя.
+
 model PromoCode {
   id             String            @id @default(cuid())
   code           String            @unique
   type           PromoDiscountType
-  // PERCENT — целое число 1–100. FIXED — сумма в минимальных единицах
-  // валюты (как priceAmount у Product), привязана к полю currency.
+
   value          Int
-  // Только для FIXED — процентная скидка валюте корзины не принадлежит.
+
   currency       String?
   isActive       Boolean           @default(true)
   expiresAt      DateTime?
-  // Минимальная сумма подытога в минимальных единицах валюты, при которой
-  // код применим (null — без ограничения).
+
   minSubtotal    Int?
   maxRedemptions Int?
   timesRedeemed  Int               @default(0)
@@ -305,11 +285,7 @@ model PromoCode {
   redemptions PromoCodeRedemption[]
 }
 
-// Промокоды доступны только вошедшим пользователям, и один и тот же код
-// каждый пользователь может использовать только один раз — @@unique ниже
-// это и обеспечивает на уровне БД, а не только проверкой в коде. Запись
-// создаётся вебхуком Stripe только при подтверждённой оплате (не при
-// создании заказа), иначе брошенный неоплаченный заказ "сжигал" бы попытку.
+
 model PromoCodeRedemption {
   id          String   @id @default(cuid())
   promoCodeId String
@@ -324,11 +300,7 @@ model PromoCodeRedemption {
   @@index([userId])
 }
 
-// Позволяет суперадмину выдать роль ADMIN/SUPERADMIN по email до того, как
-// человек вообще зарегистрировался — при первой регистрации (пароль или
-// Google) роль подставляется автоматически, а запись удаляется. Если
-// аккаунт уже существует, роль обновляется сразу и эта запись не создаётся
-// — см. setUserRole() в src/lib/admin/team-actions.ts.
+
 model AdminInvite {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -337,9 +309,7 @@ model AdminInvite {
   createdAt DateTime @default(now())
 }
 
-// Журнал действий в админке — кто и что менял. actorEmail хранится как
-// строка (снапшот), а не FK на User — тот же принцип, что у OrderItem: если
-// админа потом удалят/разжалуют, история его действий не должна исчезнуть.
+
 model AdminAuditLog {
   id         String   @id @default(cuid())
   actorEmail String
@@ -350,4 +320,13 @@ model AdminAuditLog {
   createdAt  DateTime @default(now())
 
   @@index([createdAt])
+}
+
+
+model RateLimitHit {
+  id        String   @id @default(cuid())
+  key       String
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
 }

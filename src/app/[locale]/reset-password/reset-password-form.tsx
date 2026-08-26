@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 
 export type ResetPasswordDict = {
@@ -63,13 +63,13 @@ export function ResetPasswordForm({ token, dict }: { token: string | null; dict:
     <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="password">{dict.newPasswordLabel}</Label>
-        <Input id="password" name="password" type="password" autoComplete="new-password" required />
+        <PasswordInput id="password" name="password" autoComplete="new-password" required />
         <p className="text-xs text-muted-foreground">{dict.passwordHint}</p>
       </div>
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="confirmPassword">{dict.confirmPasswordLabel}</Label>
-        <Input id="confirmPassword" name="confirmPassword" type="password" autoComplete="new-password" required />
+        <PasswordInput id="confirmPassword" name="confirmPassword" autoComplete="new-password" required />
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}

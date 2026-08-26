@@ -1,9 +1,7 @@
 import type { NextConfig } from "next";
 
 
-// 'unsafe-eval' только в dev — next dev --webpack (Fast Refresh) evals its
-// own source maps, and CSP without it makes the whole page crash blank in
-// development. Production's build never needs eval, so prod stays strict.
+
 const isDev = process.env.NODE_ENV !== "production";
 
 const contentSecurityPolicy = [

@@ -3,6 +3,7 @@ import { randomBytes, createHash } from "crypto";
 import * as z from "zod";
 import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/mailer";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const ForgotPasswordSchema = z.object({
   email: z.email().trim().toLowerCase(),
@@ -11,6 +12,12 @@ const ForgotPasswordSchema = z.object({
 const TOKEN_TTL_MS = 60 * 60 * 1000;
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const allowed = await checkRateLimit(`forgot-password:${ip}`, { max: 5, windowMs: 60 * 60 * 1000 });
+  if (!allowed) {
+    return NextResponse.json({ error: "Слишком много попыток. Попробуйте позже." }, { status: 429 });
+  }
+
   const body = await request.json().catch(() => null);
   const parsed = ForgotPasswordSchema.safeParse(body);
 

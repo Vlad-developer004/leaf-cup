@@ -1,0 +1,74 @@
+name: E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    # Real Stripe test-mode payment is exercised end-to-end (card 4242...),
+    # so this job needs real test keys as repo secrets:
+    #   Settings → Secrets and variables → Actions →
+    #   STRIPE_SECRET_KEY, NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    # (https://dashboard.stripe.com/test/apikeys). Without them the job
+    # still runs but the payment step will fail — everything up to the
+    # checkout page still gets covered.
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: leafandcup
+          POSTGRES_PASSWORD: leafandcup
+          POSTGRES_DB: leafandcup
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: "postgresql://leafandcup:leafandcup@localhost:5432/leafandcup"
+      AUTH_SECRET: "e2e-ci-secret"
+      RESEND_API_KEY: "ci-dummy-key"
+      GOOGLE_CLIENT_ID: "ci-dummy-id"
+      GOOGLE_CLIENT_SECRET: "ci-dummy-secret"
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+      STRIPE_WEBHOOK_SECRET: "whsec_ci_dummy"
+      CI: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Apply migrations
+        run: npx prisma migrate deploy
+
+      - name: Seed database
+        run: npx prisma db seed
+
+      - run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      - name: Run Playwright tests
+        run: npm run test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14

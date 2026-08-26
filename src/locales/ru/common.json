@@ -371,6 +371,10 @@
   "themeToggle": {
     "ariaLabel": "Переключить тему"
   },
+  "passwordInput": {
+    "show": "Показать пароль",
+    "hide": "Скрыть пароль"
+  },
   "languageSwitcher": {
     "ariaLabel": "Выбрать язык"
   },

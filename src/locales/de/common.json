@@ -371,6 +371,10 @@
   "themeToggle": {
     "ariaLabel": "Design wechseln"
   },
+  "passwordInput": {
+    "show": "Passwort anzeigen",
+    "hide": "Passwort verbergen"
+  },
   "languageSwitcher": {
     "ariaLabel": "Sprache auswählen"
   },

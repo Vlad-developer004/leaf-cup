@@ -3,9 +3,18 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { logAdminAction } from "@/lib/admin/audit-log";
+import { sendAdminInviteEmail, sendRoleChangedEmail } from "@/lib/mailer";
+
+async function getOrigin() {
+  const h = await headers();
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  const host = h.get("host");
+  return `${proto}://${host}`;
+}
 
 type ActionResult = { success: true } | { success: false; error: string };
 
@@ -32,6 +41,8 @@ export async function grantRole(input: { email: string; role: "ADMIN" | "SUPERAD
   }
   const { email, role } = parsed.data;
 
+  const origin = await getOrigin();
+
   const existingUser = await prisma.user.findUnique({ where: { email } });
   if (existingUser) {
     await prisma.user.update({ where: { email }, data: { role } });
@@ -43,6 +54,11 @@ export async function grantRole(input: { email: string; role: "ADMIN" | "SUPERAD
       targetId: existingUser.id,
       summary: `Назначил роль ${role} пользователю ${email}`,
     });
+    try {
+      await sendRoleChangedEmail(email, role, `${origin}/admin`);
+    } catch (error) {
+      console.error("Failed to send role-changed email", error);
+    }
   } else {
     await prisma.adminInvite.upsert({
       where: { email },
@@ -55,6 +71,11 @@ export async function grantRole(input: { email: string; role: "ADMIN" | "SUPERAD
       targetType: "AdminInvite",
       summary: `Отправил приглашение с ролью ${role} на ${email}`,
     });
+    try {
+      await sendAdminInviteEmail(email, role, `${origin}/sign-in`);
+    } catch (error) {
+      console.error("Failed to send admin invite email", error);
+    }
   }
 
   revalidatePath("/admin/team");

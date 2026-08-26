@@ -46,3 +46,45 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
     `,
   });
 }
+
+const ROLE_LABELS: Record<"ADMIN" | "SUPERADMIN", string> = {
+  ADMIN: "администратора",
+  SUPERADMIN: "суперадминистратора",
+};
+
+export async function sendAdminInviteEmail(
+  email: string,
+  role: "ADMIN" | "SUPERADMIN",
+  signInUrl: string,
+) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
+  await resend.emails.send({
+    from: "Leaf & Cup <onboarding@resend.dev>",
+    to: email,
+    subject: "Вам открыт доступ в админ-панель — Leaf & Cup",
+    html: `
+      <p>Вам назначена роль ${ROLE_LABELS[role]} в Leaf & Cup.</p>
+      <p>Зарегистрируйтесь или войдите на этот email, чтобы получить доступ: <a href="${signInUrl}">${signInUrl}</a></p>
+      <p>Если вы не ожидали этого письма — просто проигнорируйте его.</p>
+    `,
+  });
+}
+
+export async function sendRoleChangedEmail(
+  email: string,
+  role: "ADMIN" | "SUPERADMIN",
+  adminUrl: string,
+) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
+  await resend.emails.send({
+    from: "Leaf & Cup <onboarding@resend.dev>",
+    to: email,
+    subject: "Ваша роль в Leaf & Cup изменена",
+    html: `
+      <p>Вам назначена роль ${ROLE_LABELS[role]} в Leaf & Cup.</p>
+      <p>Админ-панель: <a href="${adminUrl}">${adminUrl}</a></p>
+    `,
+  });
+}

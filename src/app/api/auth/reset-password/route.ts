@@ -3,6 +3,7 @@ import { createHash } from "crypto";
 import bcrypt from "bcryptjs";
 import * as z from "zod";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const ResetPasswordSchema = z.object({
   token: z.string().min(1),
@@ -10,6 +11,12 @@ const ResetPasswordSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const allowed = await checkRateLimit(`reset-password:${ip}`, { max: 10, windowMs: 60 * 60 * 1000 });
+  if (!allowed) {
+    return NextResponse.json({ error: "Слишком много попыток. Попробуйте позже." }, { status: 429 });
+  }
+
   const body = await request.json().catch(() => null);
   const parsed = ResetPasswordSchema.safeParse(body);
 

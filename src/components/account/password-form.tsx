@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { changePassword } from "@/lib/account/password-actions";
 
@@ -48,9 +48,8 @@ export function PasswordForm({
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 rounded-xl border p-6">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="currentPassword">{dict.currentPassword}</Label>
-        <Input
+        <PasswordInput
           id="currentPassword"
-          type="password"
           required
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
@@ -58,9 +57,8 @@ export function PasswordForm({
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="newPassword">{dict.newPassword}</Label>
-        <Input
+        <PasswordInput
           id="newPassword"
-          type="password"
           required
           minLength={8}
           value={newPassword}
@@ -69,9 +67,8 @@ export function PasswordForm({
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="confirmPassword">{dict.confirmPassword}</Label>
-        <Input
+        <PasswordInput
           id="confirmPassword"
-          type="password"
           required
           minLength={8}
           value={confirmPassword}

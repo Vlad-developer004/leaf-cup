@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { authConfig } from "@/auth.config";
 import { consumeAdminInvite } from "@/lib/admin/admin-invites";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -17,11 +18,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: {},
         password: {},
       },
-      authorize: async (credentials) => {
+      authorize: async (credentials, request) => {
         const email = credentials?.email;
         const password = credentials?.password;
 
         if (typeof email !== "string" || typeof password !== "string") {
+          return null;
+        }
+
+        const ip = getClientIp(request);
+        const allowed = await checkRateLimit(`login:${ip}`, { max: 10, windowMs: 15 * 60 * 1000 });
+        if (!allowed) {
           return null;
         }
 
