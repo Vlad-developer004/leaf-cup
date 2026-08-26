@@ -125,6 +125,7 @@ export default async function CatalogPage({
                     icon={getCategoryIcon(product.category.slug)}
                     images={product.images}
                     alt={product.name}
+                    priority={index < 4}
                     className="aspect-4/3 w-full"
                     overlay={
                       <FavoriteButton

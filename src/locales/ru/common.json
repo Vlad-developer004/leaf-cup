@@ -1,4 +1,8 @@
 {
+  "metadata": {
+    "title": "Leaf & Cup — интернет-магазин чая",
+    "description": "Погрузитесь в мир вкуса и аромата. Мы собрали для вас лучшие сорта чая, уютные чашки и заварники, чтобы каждое домашнее чаепитие приносило радость."
+  },
   "about": {
     "title": "О нас",
     "metaTitle": "О нас — Leaf & Cup",
@@ -263,7 +267,8 @@
     "activeEmpty": "Нет активных заказов",
     "shipmentsLabel": "Доставки",
     "shipmentsCount": "Отправлено: ",
-    "shipmentsEmpty": "Пока ничего не отправлено"
+    "shipmentsEmpty": "Пока ничего не отправлено",
+    "orderNumber": "Заказ #"
   },
   "favorites": {
     "title": "Избранное",
@@ -390,7 +395,9 @@
     "products": "Товары",
     "categories": "Категории",
     "orders": "Заказы",
-    "promoCodes": "Промокоды"
+    "promoCodes": "Промокоды",
+    "team": "Команда",
+    "auditLog": "Журнал действий"
   },
   "admin": {
     "title": "Админ-панель",
@@ -408,7 +415,8 @@
     "actions": "Действия",
     "edit": "Изменить",
     "promoCodesTitle": "Промокоды",
-    "addPromoCode": "Добавить промокод"
+    "addPromoCode": "Добавить промокод",
+    "revenueChartTitle": "Выручка за последние 14 дней"
   },
   "adminOrders": {
     "title": "Заказы",
@@ -420,7 +428,14 @@
     "status": "Статус",
     "actions": "Действия",
     "empty": "Заказов пока нет.",
-    "open": "Открыть"
+    "open": "Открыть",
+    "exportCsv": "Экспорт CSV",
+    "searchPlaceholder": "Поиск по email или номеру заказа…",
+    "searchBtn": "Найти",
+    "customerAndShipping": "Покупатель и доставка",
+    "placedOn": "Оформлен",
+    "statusChange": "Смена статуса",
+    "items": "Товары"
   },
   "adminProducts": {
     "title": "Товары",
@@ -437,7 +452,11 @@
     "empty": "Ничего не найдено.",
     "active": "Активен",
     "hidden": "Скрыт",
-    "edit": "Изменить"
+    "edit": "Изменить",
+    "exportCsv": "Экспорт CSV",
+    "selectedCount": "Выбрано: {{count}}",
+    "bulkShow": "Показать",
+    "bulkHide": "Скрыть"
   },
   "adminPromoCodes": {
     "code": "Код",
@@ -452,5 +471,117 @@
     "expired": "Истёк",
     "noLimit": "без лимита",
     "noExpiry": "бессрочно"
+  },
+  "adminCategoryForm": {
+    "titleNew": "Новая категория",
+    "titleEdit": "Изменить категорию",
+    "name": "Название",
+    "slug": "Адрес (slug)",
+    "description": "Описание",
+    "submitCreate": "Создать",
+    "submitSave": "Сохранить",
+    "submitPending": "Сохраняем…"
+  },
+  "adminDeleteCategory": {
+    "deleteBtn": "Удалить",
+    "disabledTitle": "Сначала перенесите товары в другую категорию",
+    "dialogTitle": "Удалить категорию?",
+    "dialogDesc": "Действие необратимо. В категории сейчас нет товаров, так что удаление безопасно.",
+    "cancel": "Отмена",
+    "confirmBtn": "Удалить"
+  },
+  "adminProductForm": {
+    "titleNew": "Новый товар",
+    "titleEdit": "Изменить товар",
+    "name": "Название",
+    "slug": "Адрес (slug)",
+    "description": "Описание",
+    "price": "Цена",
+    "currency": "Валюта",
+    "stock": "Остаток на складе",
+    "category": "Категория",
+    "images": "Ссылки на изображения (по одной на строку)",
+    "featuredLabel": "Показывать в «Избранном» на главной",
+    "activeLabel": "Активен (виден в каталоге)",
+    "submitCreate": "Создать товар",
+    "submitSave": "Сохранить изменения",
+    "submitPending": "Сохраняем…",
+    "cancel": "Отмена"
+  },
+  "adminProductRowActions": {
+    "show": "Показать",
+    "hide": "Скрыть",
+    "hideDialogTitle": "Скрыть товар?",
+    "hideDialogDesc": "Товар пропадёт из каталога, но останется в базе и в истории уже оформленных заказов. Его всегда можно будет показать снова.",
+    "cancel": "Отмена",
+    "confirmHide": "Скрыть"
+  },
+  "adminOrderStatusForm": {
+    "finalStatus": "Заказ в финальном статусе.",
+    "submitIdle": "Обновить статус",
+    "submitPending": "Обновляем…"
+  },
+  "adminPromoCodeForm": {
+    "titleNew": "Новый промокод",
+    "titleEdit": "Изменить промокод",
+    "code": "Код",
+    "type": "Тип скидки",
+    "typePercent": "Процент",
+    "typeFixed": "Фиксированная сумма",
+    "valuePercent": "Процент (1–100)",
+    "valueFixed": "Сумма скидки",
+    "currency": "Валюта",
+    "minSubtotal": "Мин. сумма заказа",
+    "minSubtotalPlaceholder": "Без ограничения",
+    "maxRedemptions": "Лимит использований",
+    "maxRedemptionsPlaceholder": "Без ограничения",
+    "expires": "Действует до",
+    "expiresPlaceholder": "Без ограничения",
+    "active": "Активен",
+    "submitCreate": "Создать",
+    "submitSave": "Сохранить",
+    "submitPending": "Сохраняем…"
+  },
+  "adminPromoCodeRowActions": {
+    "activate": "Активировать",
+    "deactivate": "Деактивировать",
+    "deleteBtn": "Удалить",
+    "dialogTitle": "Удалить промокод?",
+    "dialogDesc": "Действие необратимо. На уже оформленные заказы это не повлияет — там код и скидка сохранены отдельно.",
+    "cancel": "Отмена",
+    "confirmBtn": "Удалить"
+  },
+  "orderStatus": {
+    "pending": "Ожидает оплаты",
+    "paid": "Оплачен",
+    "failed": "Оплата не прошла",
+    "shipped": "Отправлен",
+    "delivered": "Доставлен",
+    "cancelled": "Отменён"
+  },
+  "adminTeam": {
+    "title": "Команда",
+    "inviteTitle": "Выдать доступ",
+    "emailLabel": "Email",
+    "emailPlaceholder": "email@example.com",
+    "roleLabel": "Роль",
+    "roleAdmin": "Админ",
+    "roleSuperadmin": "Суперадмин",
+    "grantBtn": "Выдать доступ",
+    "grantPending": "Выдаём…",
+    "currentAdminsTitle": "Текущие админы",
+    "pendingInvitesTitle": "Ожидают регистрации",
+    "noAdmins": "Пока нет других админов.",
+    "noInvites": "Нет ожидающих приглашений.",
+    "you": "(вы)",
+    "revokeBtn": "Снять права",
+    "cancelInviteBtn": "Отменить",
+    "invitedByLabel": "Пригласил",
+    "pendingBadge": "Ждёт регистрации",
+    "hint": "Можно выдать доступ по email даже тому, кто ещё не зарегистрирован — роль применится автоматически при первой регистрации (пароль или Google)."
+  },
+  "adminAuditLog": {
+    "title": "Журнал действий",
+    "empty": "Пока нет ни одной записи."
   }
 }

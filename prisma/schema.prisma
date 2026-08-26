@@ -13,6 +13,9 @@ datasource db {
 enum Role {
   CUSTOMER
   ADMIN
+  // Может назначать/снимать роль ADMIN и SUPERADMIN у других — см.
+  // src/lib/admin/team-actions.ts. Всегда имеет и права обычного ADMIN.
+  SUPERADMIN
 }
 
 model User {
@@ -136,7 +139,7 @@ enum TranslatableField {
 // связан FK, т.к. ссылается то на Product, то на Category (полиморфно) —
 // см. getTranslationsMap() в src/lib/translations.ts.
 model Translation {
-  id         String              @id @default(cuid())
+  id         String             @id @default(cuid())
   entityType TranslatableEntity
   entityId   String
   locale     String
@@ -319,4 +322,32 @@ model PromoCodeRedemption {
 
   @@unique([promoCodeId, userId])
   @@index([userId])
+}
+
+// Позволяет суперадмину выдать роль ADMIN/SUPERADMIN по email до того, как
+// человек вообще зарегистрировался — при первой регистрации (пароль или
+// Google) роль подставляется автоматически, а запись удаляется. Если
+// аккаунт уже существует, роль обновляется сразу и эта запись не создаётся
+// — см. setUserRole() в src/lib/admin/team-actions.ts.
+model AdminInvite {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  role      Role
+  invitedBy String
+  createdAt DateTime @default(now())
+}
+
+// Журнал действий в админке — кто и что менял. actorEmail хранится как
+// строка (снапшот), а не FK на User — тот же принцип, что у OrderItem: если
+// админа потом удалят/разжалуют, история его действий не должна исчезнуть.
+model AdminAuditLog {
+  id         String   @id @default(cuid())
+  actorEmail String
+  action     String
+  targetType String
+  targetId   String?
+  summary    String
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
 }

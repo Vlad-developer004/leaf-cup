@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
+import { logAdminAction } from "@/lib/admin/audit-log";
 
 const promoCodeSchema = z
   .object({
@@ -38,9 +39,10 @@ type ActionResult = { success: true } | { success: false; error: string };
 
 async function requireAdmin() {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") {
+  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
     redirect("/");
   }
+  return session;
 }
 
 function toPromoCodeData(parsed: z.infer<typeof promoCodeSchema>) {
@@ -57,15 +59,16 @@ function toPromoCodeData(parsed: z.infer<typeof promoCodeSchema>) {
 }
 
 export async function createPromoCode(input: PromoCodeFormInput): Promise<ActionResult> {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const parsed = promoCodeSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0]?.message ?? "Проверьте поля формы." };
   }
 
+  let promoCode;
   try {
-    await prisma.promoCode.create({ data: toPromoCodeData(parsed.data) });
+    promoCode = await prisma.promoCode.create({ data: toPromoCodeData(parsed.data) });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return { success: false, error: "Такой код уже используется." };
@@ -73,12 +76,20 @@ export async function createPromoCode(input: PromoCodeFormInput): Promise<Action
     throw error;
   }
 
+  await logAdminAction({
+    actorEmail: session.user.email!,
+    action: "promocode.create",
+    targetType: "PromoCode",
+    targetId: promoCode.id,
+    summary: `Создал промокод «${promoCode.code}»`,
+  });
+
   revalidatePath("/admin/promo-codes");
   return { success: true };
 }
 
 export async function updatePromoCode(id: string, input: PromoCodeFormInput): Promise<ActionResult> {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const parsed = promoCodeSchema.safeParse(input);
   if (!parsed.success) {
@@ -94,19 +105,45 @@ export async function updatePromoCode(id: string, input: PromoCodeFormInput): Pr
     throw error;
   }
 
+  await logAdminAction({
+    actorEmail: session.user.email!,
+    action: "promocode.update",
+    targetType: "PromoCode",
+    targetId: id,
+    summary: `Изменил промокод «${parsed.data.code}»`,
+  });
+
   revalidatePath("/admin/promo-codes");
   return { success: true };
 }
 
 export async function setPromoCodeActive(id: string, isActive: boolean) {
-  await requireAdmin();
-  await prisma.promoCode.update({ where: { id }, data: { isActive } });
+  const session = await requireAdmin();
+  const promoCode = await prisma.promoCode.update({ where: { id }, data: { isActive } });
+
+  await logAdminAction({
+    actorEmail: session.user.email!,
+    action: isActive ? "promocode.activate" : "promocode.deactivate",
+    targetType: "PromoCode",
+    targetId: id,
+    summary: `${isActive ? "Активировал" : "Деактивировал"} промокод «${promoCode.code}»`,
+  });
+
   revalidatePath("/admin/promo-codes");
 }
 
 export async function deletePromoCode(id: string): Promise<ActionResult> {
-  await requireAdmin();
-  await prisma.promoCode.delete({ where: { id } });
+  const session = await requireAdmin();
+  const promoCode = await prisma.promoCode.delete({ where: { id } });
+
+  await logAdminAction({
+    actorEmail: session.user.email!,
+    action: "promocode.delete",
+    targetType: "PromoCode",
+    targetId: id,
+    summary: `Удалил промокод «${promoCode.code}»`,
+  });
+
   revalidatePath("/admin/promo-codes");
   return { success: true };
 }

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -23,6 +24,7 @@ export function PromoCodeRowActions({
   isActive: boolean;
 }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -44,26 +46,25 @@ export function PromoCodeRowActions({
   return (
     <div className="flex items-center justify-end gap-1">
       <Button variant="ghost" size="sm" disabled={isPending} onClick={toggleActive}>
-        {isActive ? "Деактивировать" : "Активировать"}
+        {isActive ? t("adminPromoCodeRowActions.deactivate") : t("adminPromoCodeRowActions.activate")}
       </Button>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogTrigger asChild>
           <Button variant="ghost" size="sm" className="text-muted-foreground">
-            Удалить
+            {t("adminPromoCodeRowActions.deleteBtn")}
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Удалить промокод?</AlertDialogTitle>
+            <AlertDialogTitle>{t("adminPromoCodeRowActions.dialogTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Действие необратимо. На уже оформленные заказы это не повлияет — там код и скидка
-              сохранены отдельно.
+              {t("adminPromoCodeRowActions.dialogDesc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogCancel>{t("adminPromoCodeRowActions.cancel")}</AlertDialogCancel>
             <Button variant="destructive" disabled={isPending} onClick={handleDelete}>
-              Удалить
+              {t("adminPromoCodeRowActions.confirmBtn")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

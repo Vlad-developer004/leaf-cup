@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { DatePicker } from "@/components/admin/date-picker";
 import { createPromoCode, updatePromoCode } from "@/lib/admin/promo-code-actions";
 
 type PromoCodeFormValues = {
@@ -55,6 +57,7 @@ export function PromoCodeFormDialog({
   initialValues?: PromoCodeFormValues;
 }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const isEditing = !!promoCodeId;
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState<PromoCodeFormValues>(initialValues ?? emptyValues);
@@ -89,11 +92,13 @@ export function PromoCodeFormDialog({
       <DialogContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <DialogHeader>
-            <DialogTitle>{isEditing ? "Изменить промокод" : "Новый промокод"}</DialogTitle>
+            <DialogTitle>
+              {isEditing ? t("adminPromoCodeForm.titleEdit") : t("adminPromoCodeForm.titleNew")}
+            </DialogTitle>
           </DialogHeader>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="promo-code">Код</Label>
+            <Label htmlFor="promo-code">{t("adminPromoCodeForm.code")}</Label>
             <Input
               id="promo-code"
               required
@@ -104,7 +109,7 @@ export function PromoCodeFormDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="promo-type">Тип скидки</Label>
+              <Label htmlFor="promo-type">{t("adminPromoCodeForm.type")}</Label>
               <Select
                 value={values.type}
                 onValueChange={(type: "PERCENT" | "FIXED") =>
@@ -115,15 +120,17 @@ export function PromoCodeFormDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="PERCENT">Процент</SelectItem>
-                  <SelectItem value="FIXED">Фиксированная сумма</SelectItem>
+                  <SelectItem value="PERCENT">{t("adminPromoCodeForm.typePercent")}</SelectItem>
+                  <SelectItem value="FIXED">{t("adminPromoCodeForm.typeFixed")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="promo-value">
-                {values.type === "PERCENT" ? "Процент (1–100)" : "Сумма скидки"}
+                {values.type === "PERCENT"
+                  ? t("adminPromoCodeForm.valuePercent")
+                  : t("adminPromoCodeForm.valueFixed")}
               </Label>
               <Input
                 id="promo-value"
@@ -139,7 +146,7 @@ export function PromoCodeFormDialog({
 
           {values.type === "FIXED" && (
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="promo-currency">Валюта</Label>
+              <Label htmlFor="promo-currency">{t("adminPromoCodeForm.currency")}</Label>
               <Select
                 value={values.currency}
                 onValueChange={(currency) => setValues((prev) => ({ ...prev, currency }))}
@@ -156,26 +163,26 @@ export function PromoCodeFormDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="promo-min-subtotal">Мин. сумма заказа</Label>
+              <Label htmlFor="promo-min-subtotal">{t("adminPromoCodeForm.minSubtotal")}</Label>
               <Input
                 id="promo-min-subtotal"
                 type="number"
                 step="0.01"
                 min="0"
-                placeholder="Без ограничения"
+                placeholder={t("adminPromoCodeForm.minSubtotalPlaceholder")}
                 value={values.minSubtotalEuros}
                 onChange={(e) => setValues((prev) => ({ ...prev, minSubtotalEuros: e.target.value }))}
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="promo-max-redemptions">Лимит использований</Label>
+              <Label htmlFor="promo-max-redemptions">{t("adminPromoCodeForm.maxRedemptions")}</Label>
               <Input
                 id="promo-max-redemptions"
                 type="number"
                 step="1"
                 min="0"
-                placeholder="Без ограничения"
+                placeholder={t("adminPromoCodeForm.maxRedemptionsPlaceholder")}
                 value={values.maxRedemptions}
                 onChange={(e) => setValues((prev) => ({ ...prev, maxRedemptions: e.target.value }))}
               />
@@ -183,12 +190,11 @@ export function PromoCodeFormDialog({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="promo-expires">Действует до</Label>
-            <Input
-              id="promo-expires"
-              type="date"
+            <Label>{t("adminPromoCodeForm.expires")}</Label>
+            <DatePicker
               value={values.expiresAt}
-              onChange={(e) => setValues((prev) => ({ ...prev, expiresAt: e.target.value }))}
+              onChange={(expiresAt) => setValues((prev) => ({ ...prev, expiresAt }))}
+              placeholder={t("adminPromoCodeForm.expiresPlaceholder")}
             />
           </div>
 
@@ -198,14 +204,18 @@ export function PromoCodeFormDialog({
               checked={values.isActive}
               onCheckedChange={(isActive) => setValues((prev) => ({ ...prev, isActive }))}
             />
-            <Label htmlFor="promo-active">Активен</Label>
+            <Label htmlFor="promo-active">{t("adminPromoCodeForm.active")}</Label>
           </div>
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 
           <DialogFooter>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Сохраняем…" : isEditing ? "Сохранить" : "Создать"}
+              {isPending
+                ? t("adminPromoCodeForm.submitPending")
+                : isEditing
+                  ? t("adminPromoCodeForm.submitSave")
+                  : t("adminPromoCodeForm.submitCreate")}
             </Button>
           </DialogFooter>
         </form>

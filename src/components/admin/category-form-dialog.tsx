@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +30,7 @@ export function CategoryFormDialog({
   initialValues?: CategoryFormValues;
 }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const isEditing = !!categoryId;
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState<CategoryFormValues>(
@@ -64,11 +66,13 @@ export function CategoryFormDialog({
       <DialogContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <DialogHeader>
-            <DialogTitle>{isEditing ? "Изменить категорию" : "Новая категория"}</DialogTitle>
+            <DialogTitle>
+              {isEditing ? t("adminCategoryForm.titleEdit") : t("adminCategoryForm.titleNew")}
+            </DialogTitle>
           </DialogHeader>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="cat-name">Название</Label>
+            <Label htmlFor="cat-name">{t("adminCategoryForm.name")}</Label>
             <Input
               id="cat-name"
               required
@@ -78,7 +82,7 @@ export function CategoryFormDialog({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="cat-slug">Адрес (slug)</Label>
+            <Label htmlFor="cat-slug">{t("adminCategoryForm.slug")}</Label>
             <Input
               id="cat-slug"
               required
@@ -91,7 +95,7 @@ export function CategoryFormDialog({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="cat-description">Описание</Label>
+            <Label htmlFor="cat-description">{t("adminCategoryForm.description")}</Label>
             <Textarea
               id="cat-description"
               rows={3}
@@ -104,7 +108,11 @@ export function CategoryFormDialog({
 
           <DialogFooter>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Сохраняем…" : isEditing ? "Сохранить" : "Создать"}
+              {isPending
+                ? t("adminCategoryForm.submitPending")
+                : isEditing
+                  ? t("adminCategoryForm.submitSave")
+                  : t("adminCategoryForm.submitCreate")}
             </Button>
           </DialogFooter>
         </form>

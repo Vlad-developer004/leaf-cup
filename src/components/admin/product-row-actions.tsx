@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -24,6 +25,7 @@ export function ProductRowActions({
   isActive: boolean;
 }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [isPending, startTransition] = useTransition();
 
   function setActive(next: boolean) {
@@ -36,7 +38,7 @@ export function ProductRowActions({
   if (!isActive) {
     return (
       <Button variant="ghost" size="sm" disabled={isPending} onClick={() => setActive(true)}>
-        Показать
+        {t("adminProductRowActions.show")}
       </Button>
     );
   }
@@ -45,21 +47,20 @@ export function ProductRowActions({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="ghost" size="sm" className="text-muted-foreground">
-          Скрыть
+          {t("adminProductRowActions.hide")}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Скрыть товар?</AlertDialogTitle>
+          <AlertDialogTitle>{t("adminProductRowActions.hideDialogTitle")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Товар пропадёт из каталога, но останется в базе и в истории уже оформленных заказов.
-            Его всегда можно будет показать снова.
+            {t("adminProductRowActions.hideDialogDesc")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Отмена</AlertDialogCancel>
+          <AlertDialogCancel>{t("adminProductRowActions.cancel")}</AlertDialogCancel>
           <AlertDialogAction disabled={isPending} onClick={() => setActive(false)}>
-            Скрыть
+            {t("adminProductRowActions.confirmHide")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

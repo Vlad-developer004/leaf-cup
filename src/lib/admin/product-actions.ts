@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
+import { logAdminAction } from "@/lib/admin/audit-log";
 
 const productSchema = z.object({
   name: z.string().trim().min(1, "Укажите название"),
@@ -30,9 +31,10 @@ type ActionResult = { success: true } | { success: false; error: string };
 
 async function requireAdmin() {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") {
+  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
     redirect("/");
   }
+  return session;
 }
 
 function toProductData(parsed: z.infer<typeof productSchema>) {
@@ -54,15 +56,16 @@ function toProductData(parsed: z.infer<typeof productSchema>) {
 }
 
 export async function createProduct(input: ProductFormInput): Promise<ActionResult> {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const parsed = productSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0]?.message ?? "Проверьте поля формы." };
   }
 
+  let product;
   try {
-    await prisma.product.create({ data: toProductData(parsed.data) });
+    product = await prisma.product.create({ data: toProductData(parsed.data) });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return { success: false, error: "Такой адрес (slug) уже используется другим товаром." };
@@ -70,13 +73,21 @@ export async function createProduct(input: ProductFormInput): Promise<ActionResu
     throw error;
   }
 
+  await logAdminAction({
+    actorEmail: session.user.email!,
+    action: "product.create",
+    targetType: "Product",
+    targetId: product.id,
+    summary: `Создал товар «${product.name}»`,
+  });
+
   revalidatePath("/admin/products");
   revalidatePath("/catalog");
   return { success: true };
 }
 
 export async function updateProduct(id: string, input: ProductFormInput): Promise<ActionResult> {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const parsed = productSchema.safeParse(input);
   if (!parsed.success) {
@@ -92,6 +103,14 @@ export async function updateProduct(id: string, input: ProductFormInput): Promis
     throw error;
   }
 
+  await logAdminAction({
+    actorEmail: session.user.email!,
+    action: "product.update",
+    targetType: "Product",
+    targetId: id,
+    summary: `Изменил товар «${parsed.data.name}»`,
+  });
+
   revalidatePath("/admin/products");
   revalidatePath("/catalog");
   revalidatePath(`/catalog/${parsed.data.slug}`);
@@ -99,8 +118,38 @@ export async function updateProduct(id: string, input: ProductFormInput): Promis
 }
 
 export async function setProductActive(id: string, isActive: boolean) {
-  await requireAdmin();
-  await prisma.product.update({ where: { id }, data: { isActive } });
+  const session = await requireAdmin();
+  const product = await prisma.product.update({ where: { id }, data: { isActive } });
+
+  await logAdminAction({
+    actorEmail: session.user.email!,
+    action: isActive ? "product.show" : "product.hide",
+    targetType: "Product",
+    targetId: id,
+    summary: `${isActive ? "Показал" : "Скрыл"} товар «${product.name}»`,
+  });
+
   revalidatePath("/admin/products");
   revalidatePath("/catalog");
+}
+
+
+export async function bulkSetProductActive(ids: string[], isActive: boolean): Promise<ActionResult> {
+  const session = await requireAdmin();
+  if (ids.length === 0) {
+    return { success: false, error: "Ничего не выбрано." };
+  }
+
+  await prisma.product.updateMany({ where: { id: { in: ids } }, data: { isActive } });
+
+  await logAdminAction({
+    actorEmail: session.user.email!,
+    action: isActive ? "product.bulk_show" : "product.bulk_hide",
+    targetType: "Product",
+    summary: `${isActive ? "Показал" : "Скрыл"} товары (${ids.length} шт.)`,
+  });
+
+  revalidatePath("/admin/products");
+  revalidatePath("/catalog");
+  return { success: true };
 }

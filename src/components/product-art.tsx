@@ -11,6 +11,7 @@ export function ProductArt({
   sizes,
   id,
   overlay,
+  priority,
 }: {
   icon: LucideIcon;
   images?: string[];
@@ -19,6 +20,8 @@ export function ProductArt({
   sizes?: string;
   id?: string;
   overlay?: ReactNode;
+
+  priority?: boolean;
 }) {
   const image = images?.[0];
 
@@ -30,6 +33,7 @@ export function ProductArt({
           alt={alt ?? ""}
           fill
           sizes={sizes ?? "(min-width: 1024px) 25vw, 50vw"}
+          priority={priority}
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
         />
         {overlay}

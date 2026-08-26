@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 export function AdminNav({
   dict,
+  showTeam = false,
 }: {
   dict: {
     dashboard: string;
@@ -14,7 +15,10 @@ export function AdminNav({
     categories: string;
     orders: string;
     promoCodes: string;
+    team: string;
+    auditLog: string;
   };
+  showTeam?: boolean;
 }) {
   const pathname = usePathname();
 
@@ -24,33 +28,43 @@ export function AdminNav({
     { href: "/admin/categories", label: dict.categories },
     { href: "/admin/orders", label: dict.orders },
     { href: "/admin/promo-codes", label: dict.promoCodes },
+
+    ...(showTeam
+      ? [
+          { href: "/admin/team", label: dict.team },
+          { href: "/admin/audit-log", label: dict.auditLog },
+        ]
+      : []),
   ];
 
   return (
-    <nav className="flex flex-wrap gap-1 border-b px-6">
-      {links.map((link) => {
-        const isActive =
-          link.href === "/admin" ? pathname === "/admin" : pathname.startsWith(link.href);
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={cn(
-              "relative px-3 py-3 text-sm font-medium transition-colors",
-              isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {link.label}
-            {isActive && (
-              <motion.span
-                layoutId="admin-nav-indicator"
-                className="absolute inset-x-0 -bottom-px h-0.5 bg-primary"
-                transition={{ type: "spring", stiffness: 500, damping: 35 }}
-              />
-            )}
-          </Link>
-        );
-      })}
-    </nav>
+    <div className="border-b">
+
+      <nav className="mx-auto flex w-full max-w-6xl flex-wrap gap-1 px-6">
+        {links.map((link) => {
+          const isActive =
+            link.href === "/admin" ? pathname === "/admin" : pathname.startsWith(link.href);
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "relative px-3 py-3 text-sm font-medium transition-colors",
+                isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {link.label}
+              {isActive && (
+                <motion.span
+                  layoutId="admin-nav-indicator"
+                  className="absolute inset-x-0 -bottom-px h-0.5 bg-primary"
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                />
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+    </div>
   );
 }

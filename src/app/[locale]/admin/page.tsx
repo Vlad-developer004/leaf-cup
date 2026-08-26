@@ -5,6 +5,7 @@ import { formatPrice } from "@/lib/format";
 import { LOW_STOCK_THRESHOLD } from "@/lib/admin/products";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Reveal } from "@/components/reveal";
+import { RevenueChart } from "@/components/admin/revenue-chart";
 
 import initTranslations from "@/lib/i18n";
 
@@ -19,18 +20,50 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function AdminDashboardPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const { t } = await initTranslations(locale, ["common"]);
-  const [activeProductCount, lowStockCount, actionableOrderCount, revenueByCurrency, activePromoCodeCount] =
-    await Promise.all([
-      prisma.product.count({ where: { isActive: true } }),
-      prisma.product.count({ where: { isActive: true, stock: { lte: LOW_STOCK_THRESHOLD } } }),
-      prisma.order.count({ where: { status: { in: ["PENDING", "PAID"] } } }),
-      prisma.order.groupBy({
-        by: ["currency"],
-        where: { status: "PAID" },
-        _sum: { totalAmount: true },
-      }),
-      prisma.promoCode.count({ where: { isActive: true } }),
-    ]);
+  const RANGE_DAYS = 14;
+  const rangeStart = new Date();
+  rangeStart.setHours(0, 0, 0, 0);
+  rangeStart.setDate(rangeStart.getDate() - (RANGE_DAYS - 1));
+
+  const [
+    activeProductCount,
+    lowStockCount,
+    actionableOrderCount,
+    revenueByCurrency,
+    activePromoCodeCount,
+    recentPaidOrders,
+  ] = await Promise.all([
+    prisma.product.count({ where: { isActive: true } }),
+    prisma.product.count({ where: { isActive: true, stock: { lte: LOW_STOCK_THRESHOLD } } }),
+    prisma.order.count({ where: { status: { in: ["PENDING", "PAID"] } } }),
+    prisma.order.groupBy({
+      by: ["currency"],
+      where: { status: "PAID" },
+      _sum: { totalAmount: true },
+    }),
+    prisma.promoCode.count({ where: { isActive: true } }),
+    prisma.order.findMany({
+      where: { status: "PAID", createdAt: { gte: rangeStart } },
+      select: { createdAt: true, totalAmount: true },
+    }),
+  ]);
+
+  const revenueByDay = new Map<string, number>();
+  for (let i = 0; i < RANGE_DAYS; i++) {
+    const day = new Date(rangeStart);
+    day.setDate(day.getDate() + i);
+    revenueByDay.set(day.toISOString().slice(0, 10), 0);
+  }
+  for (const order of recentPaidOrders) {
+    const key = order.createdAt.toISOString().slice(0, 10);
+    if (revenueByDay.has(key)) {
+      revenueByDay.set(key, (revenueByDay.get(key) ?? 0) + order.totalAmount);
+    }
+  }
+  const revenueSeries = Array.from(revenueByDay.entries()).map(([date, amount]) => ({
+    date: new Intl.DateTimeFormat(locale, { day: "2-digit", month: "2-digit" }).format(new Date(date)),
+    amount,
+  }));
 
   const revenueText = revenueByCurrency.length
     ? revenueByCurrency
@@ -75,6 +108,9 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
           </Reveal>
         ))}
       </div>
+      <Reveal delay={0.2}>
+        <RevenueChart data={revenueSeries} title={t("admin.revenueChartTitle")} />
+      </Reveal>
     </div>
   );
 }

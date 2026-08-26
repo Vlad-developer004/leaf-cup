@@ -1,3 +1,6 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { Link } from "@/components/localized-link";
 
 export function CatalogNav({
@@ -7,6 +10,10 @@ export function CatalogNav({
   categories: { slug: string; name: string }[];
   dict: { title: string };
 }) {
+  const pathname = usePathname();
+
+  if (pathname.includes("/admin")) return null;
+
   return (
     <nav className="flex items-center gap-6">
       <Link

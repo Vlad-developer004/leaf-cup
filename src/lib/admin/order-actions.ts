@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "@/generated/prisma/client";
 import { getAllowedNextStatuses } from "@/lib/admin/order-transitions";
+import { logAdminAction } from "@/lib/admin/audit-log";
 
 type ActionResult = { success: true } | { success: false; error: string };
 
@@ -14,7 +15,7 @@ export async function updateOrderStatus(
   nextStatus: OrderStatus,
 ): Promise<ActionResult> {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") {
+  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
     redirect("/");
   }
 
@@ -29,6 +30,15 @@ export async function updateOrderStatus(
   }
 
   await prisma.order.update({ where: { id: orderId }, data: { status: nextStatus } });
+
+  await logAdminAction({
+    actorEmail: session.user.email!,
+    action: "order.status_change",
+    targetType: "Order",
+    targetId: orderId,
+    summary: `Сменил статус заказа #${orderId.slice(-8).toUpperCase()}: ${order.status} → ${nextStatus}`,
+  });
+
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${orderId}`);
   revalidatePath("/account");

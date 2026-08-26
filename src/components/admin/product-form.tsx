@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,6 +43,7 @@ export function ProductForm({
   initialValues?: ProductFormValues;
 }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const isEditing = !!productId;
   const [values, setValues] = useState<ProductFormValues>(
     initialValues ?? {
@@ -104,7 +106,7 @@ export function ProductForm({
     <form onSubmit={handleSubmit} className="flex flex-col gap-5 rounded-xl border p-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5 sm:col-span-2">
-          <Label htmlFor="name">Название</Label>
+          <Label htmlFor="name">{t("adminProductForm.name")}</Label>
           <Input
             id="name"
             required
@@ -114,7 +116,7 @@ export function ProductForm({
         </div>
 
         <div className="flex flex-col gap-1.5 sm:col-span-2">
-          <Label htmlFor="slug">Адрес (slug)</Label>
+          <Label htmlFor="slug">{t("adminProductForm.slug")}</Label>
           <Input
             id="slug"
             required
@@ -127,7 +129,7 @@ export function ProductForm({
         </div>
 
         <div className="flex flex-col gap-1.5 sm:col-span-2">
-          <Label htmlFor="description">Описание</Label>
+          <Label htmlFor="description">{t("adminProductForm.description")}</Label>
           <Textarea
             id="description"
             required
@@ -138,7 +140,7 @@ export function ProductForm({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="priceEuros">Цена</Label>
+          <Label htmlFor="priceEuros">{t("adminProductForm.price")}</Label>
           <Input
             id="priceEuros"
             type="number"
@@ -151,7 +153,7 @@ export function ProductForm({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="currency">Валюта</Label>
+          <Label htmlFor="currency">{t("adminProductForm.currency")}</Label>
           <Select
             value={values.currency}
             onValueChange={(currency) => setValues((prev) => ({ ...prev, currency }))}
@@ -166,7 +168,7 @@ export function ProductForm({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="stock">Остаток на складе</Label>
+          <Label htmlFor="stock">{t("adminProductForm.stock")}</Label>
           <Input
             id="stock"
             type="number"
@@ -178,7 +180,7 @@ export function ProductForm({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="category">Категория</Label>
+          <Label htmlFor="category">{t("adminProductForm.category")}</Label>
           <Select
             value={values.categoryId}
             onValueChange={(categoryId) => setValues((prev) => ({ ...prev, categoryId }))}
@@ -197,7 +199,7 @@ export function ProductForm({
         </div>
 
         <div className="flex flex-col gap-1.5 sm:col-span-2">
-          <Label htmlFor="images">Ссылки на изображения (по одной на строку)</Label>
+          <Label htmlFor="images">{t("adminProductForm.images")}</Label>
           <Textarea
             id="images"
             rows={3}
@@ -213,7 +215,7 @@ export function ProductForm({
             checked={values.isFeatured}
             onCheckedChange={(isFeatured) => setValues((prev) => ({ ...prev, isFeatured }))}
           />
-          <Label htmlFor="isFeatured">Показывать в «Избранном» на главной</Label>
+          <Label htmlFor="isFeatured">{t("adminProductForm.featuredLabel")}</Label>
         </div>
 
         <div className="flex items-center gap-3">
@@ -222,7 +224,7 @@ export function ProductForm({
             checked={values.isActive}
             onCheckedChange={(isActive) => setValues((prev) => ({ ...prev, isActive }))}
           />
-          <Label htmlFor="isActive">Активен (виден в каталоге)</Label>
+          <Label htmlFor="isActive">{t("adminProductForm.activeLabel")}</Label>
         </div>
       </div>
 
@@ -230,10 +232,14 @@ export function ProductForm({
 
       <div className="flex gap-3">
         <Button type="submit" disabled={isPending}>
-          {isPending ? "Сохраняем…" : isEditing ? "Сохранить изменения" : "Создать товар"}
+          {isPending
+            ? t("adminProductForm.submitPending")
+            : isEditing
+              ? t("adminProductForm.submitSave")
+              : t("adminProductForm.submitCreate")}
         </Button>
         <Button type="button" variant="outline" onClick={() => router.push("/admin/products")}>
-          Отмена
+          {t("adminProductForm.cancel")}
         </Button>
       </div>
     </form>

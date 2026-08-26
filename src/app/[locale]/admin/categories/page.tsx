@@ -11,6 +11,7 @@ import {
 import { CategoryFormDialog } from "@/components/admin/category-form-dialog";
 import { DeleteCategoryButton } from "@/components/admin/delete-category-button";
 import { getAdminCategories } from "@/lib/admin/categories";
+import { localizeCategories } from "@/lib/translations";
 import { Reveal } from "@/components/reveal";
 
 import initTranslations from "@/lib/i18n";
@@ -27,6 +28,8 @@ export default async function AdminCategoriesPage({ params }: { params: Promise<
   const { locale } = await params;
   const { t } = await initTranslations(locale, ["common"]);
   const categories = await getAdminCategories();
+
+  const localizedCategories = await localizeCategories(categories, locale);
 
   return (
     <div className="flex flex-col gap-6">
@@ -46,9 +49,9 @@ export default async function AdminCategoriesPage({ params }: { params: Promise<
             </TableRow>
           </TableHeader>
           <TableBody>
-            {categories.map((category) => (
+            {categories.map((category, index) => (
               <TableRow key={category.id}>
-                <TableCell className="font-medium">{category.name}</TableCell>
+                <TableCell className="font-medium">{localizedCategories[index].name}</TableCell>
                 <TableCell className="text-muted-foreground">{category.slug}</TableCell>
                 <TableCell>{category._count.products}</TableCell>
                 <TableCell className="text-right">

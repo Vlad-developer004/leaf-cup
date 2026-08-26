@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
+import { logAdminAction } from "@/lib/admin/audit-log";
 
 const categorySchema = z.object({
   name: z.string().trim().min(1, "Укажите название"),
@@ -23,21 +24,23 @@ type ActionResult = { success: true } | { success: false; error: string };
 
 async function requireAdmin() {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") {
+  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
     redirect("/");
   }
+  return session;
 }
 
 export async function createCategory(input: CategoryFormInput): Promise<ActionResult> {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const parsed = categorySchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0]?.message ?? "Проверьте поля формы." };
   }
 
+  let category;
   try {
-    await prisma.category.create({
+    category = await prisma.category.create({
       data: { ...parsed.data, description: parsed.data.description || null },
     });
   } catch (error) {
@@ -47,13 +50,21 @@ export async function createCategory(input: CategoryFormInput): Promise<ActionRe
     throw error;
   }
 
+  await logAdminAction({
+    actorEmail: session.user.email!,
+    action: "category.create",
+    targetType: "Category",
+    targetId: category.id,
+    summary: `Создал категорию «${category.name}»`,
+  });
+
   revalidatePath("/admin/categories");
   revalidatePath("/catalog");
   return { success: true };
 }
 
 export async function updateCategory(id: string, input: CategoryFormInput): Promise<ActionResult> {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const parsed = categorySchema.safeParse(input);
   if (!parsed.success) {
@@ -72,13 +83,21 @@ export async function updateCategory(id: string, input: CategoryFormInput): Prom
     throw error;
   }
 
+  await logAdminAction({
+    actorEmail: session.user.email!,
+    action: "category.update",
+    targetType: "Category",
+    targetId: id,
+    summary: `Изменил категорию «${parsed.data.name}»`,
+  });
+
   revalidatePath("/admin/categories");
   revalidatePath("/catalog");
   return { success: true };
 }
 
 export async function deleteCategory(id: string): Promise<ActionResult> {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const category = await prisma.category.findUnique({
     where: { id },
@@ -95,6 +114,15 @@ export async function deleteCategory(id: string): Promise<ActionResult> {
   }
 
   await prisma.category.delete({ where: { id } });
+
+  await logAdminAction({
+    actorEmail: session.user.email!,
+    action: "category.delete",
+    targetType: "Category",
+    targetId: id,
+    summary: `Удалил категорию «${category.name}»`,
+  });
+
   revalidatePath("/admin/categories");
   revalidatePath("/catalog");
   return { success: true };

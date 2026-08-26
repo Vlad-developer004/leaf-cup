@@ -1,4 +1,8 @@
 {
+  "metadata": {
+    "title": "Leaf & Cup — Online-Teeladen",
+    "description": "Tauchen Sie ein in die Welt des Geschmacks und Aromas. Wir haben die besten Teesorten, gemütliche Tassen und Teekannen gesammelt, damit jede Teeparty zu Hause Freude bringt."
+  },
   "about": {
     "title": "Über uns",
     "metaTitle": "Über uns — Leaf & Cup",
@@ -263,7 +267,8 @@
     "activeEmpty": "Keine aktiven Bestellungen",
     "shipmentsLabel": "Sendungen",
     "shipmentsCount": "Versendet: ",
-    "shipmentsEmpty": "Noch nichts versendet"
+    "shipmentsEmpty": "Noch nichts versendet",
+    "orderNumber": "Bestellung #"
   },
   "favorites": {
     "title": "Favoriten",
@@ -390,7 +395,9 @@
     "products": "Produkte",
     "categories": "Kategorien",
     "orders": "Bestellungen",
-    "promoCodes": "Gutscheincodes"
+    "promoCodes": "Gutscheincodes",
+    "team": "Team",
+    "auditLog": "Aktivitätsprotokoll"
   },
   "admin": {
     "title": "Admin-Panel",
@@ -408,7 +415,8 @@
     "actions": "Aktionen",
     "edit": "Bearbeiten",
     "promoCodesTitle": "Gutscheincodes",
-    "addPromoCode": "Gutscheincode hinzufügen"
+    "addPromoCode": "Gutscheincode hinzufügen",
+    "revenueChartTitle": "Umsatz der letzten 14 Tage"
   },
   "adminOrders": {
     "title": "Bestellungen",
@@ -420,7 +428,14 @@
     "status": "Status",
     "actions": "Aktionen",
     "empty": "Noch keine Bestellungen.",
-    "open": "Öffnen"
+    "open": "Öffnen",
+    "exportCsv": "CSV exportieren",
+    "searchPlaceholder": "Suche nach E-Mail oder Bestellnummer...",
+    "searchBtn": "Suchen",
+    "customerAndShipping": "Kunde und Versand",
+    "placedOn": "Aufgegeben am",
+    "statusChange": "Statusänderung",
+    "items": "Artikel"
   },
   "adminProducts": {
     "title": "Produkte",
@@ -437,7 +452,11 @@
     "empty": "Nichts gefunden.",
     "active": "Aktiv",
     "hidden": "Versteckt",
-    "edit": "Bearbeiten"
+    "edit": "Bearbeiten",
+    "exportCsv": "CSV exportieren",
+    "selectedCount": "Ausgewählt: {{count}}",
+    "bulkShow": "Anzeigen",
+    "bulkHide": "Verstecken"
   },
   "adminPromoCodes": {
     "code": "Code",
@@ -452,5 +471,117 @@
     "expired": "Abgelaufen",
     "noLimit": "kein Limit",
     "noExpiry": "unbefristet"
+  },
+  "adminCategoryForm": {
+    "titleNew": "Neue Kategorie",
+    "titleEdit": "Kategorie bearbeiten",
+    "name": "Name",
+    "slug": "Slug",
+    "description": "Beschreibung",
+    "submitCreate": "Erstellen",
+    "submitSave": "Speichern",
+    "submitPending": "Wird gespeichert…"
+  },
+  "adminDeleteCategory": {
+    "deleteBtn": "Löschen",
+    "disabledTitle": "Verschieben Sie zuerst die Produkte in eine andere Kategorie",
+    "dialogTitle": "Kategorie löschen?",
+    "dialogDesc": "Diese Aktion kann nicht rückgängig gemacht werden. Die Kategorie enthält derzeit keine Produkte, das Löschen ist also sicher.",
+    "cancel": "Abbrechen",
+    "confirmBtn": "Löschen"
+  },
+  "adminProductForm": {
+    "titleNew": "Neues Produkt",
+    "titleEdit": "Produkt bearbeiten",
+    "name": "Name",
+    "slug": "Slug",
+    "description": "Beschreibung",
+    "price": "Preis",
+    "currency": "Währung",
+    "stock": "Lagerbestand",
+    "category": "Kategorie",
+    "images": "Bild-URLs (eine pro Zeile)",
+    "featuredLabel": "In „Ausgewählt“ auf der Startseite anzeigen",
+    "activeLabel": "Aktiv (im Katalog sichtbar)",
+    "submitCreate": "Produkt erstellen",
+    "submitSave": "Änderungen speichern",
+    "submitPending": "Wird gespeichert…",
+    "cancel": "Abbrechen"
+  },
+  "adminProductRowActions": {
+    "show": "Anzeigen",
+    "hide": "Verstecken",
+    "hideDialogTitle": "Produkt verstecken?",
+    "hideDialogDesc": "Das Produkt verschwindet aus dem Katalog, bleibt aber in der Datenbank und in bisherigen Bestellungen erhalten. Sie können es jederzeit wieder anzeigen.",
+    "cancel": "Abbrechen",
+    "confirmHide": "Verstecken"
+  },
+  "adminOrderStatusForm": {
+    "finalStatus": "Die Bestellung hat einen finalen Status.",
+    "submitIdle": "Status aktualisieren",
+    "submitPending": "Wird aktualisiert…"
+  },
+  "adminPromoCodeForm": {
+    "titleNew": "Neuer Gutscheincode",
+    "titleEdit": "Gutscheincode bearbeiten",
+    "code": "Code",
+    "type": "Rabattart",
+    "typePercent": "Prozent",
+    "typeFixed": "Fester Betrag",
+    "valuePercent": "Prozent (1–100)",
+    "valueFixed": "Rabattbetrag",
+    "currency": "Währung",
+    "minSubtotal": "Mindestbestellwert",
+    "minSubtotalPlaceholder": "Kein Limit",
+    "maxRedemptions": "Nutzungslimit",
+    "maxRedemptionsPlaceholder": "Kein Limit",
+    "expires": "Gültig bis",
+    "expiresPlaceholder": "Unbefristet",
+    "active": "Aktiv",
+    "submitCreate": "Erstellen",
+    "submitSave": "Speichern",
+    "submitPending": "Wird gespeichert…"
+  },
+  "adminPromoCodeRowActions": {
+    "activate": "Aktivieren",
+    "deactivate": "Deaktivieren",
+    "deleteBtn": "Löschen",
+    "dialogTitle": "Gutscheincode löschen?",
+    "dialogDesc": "Diese Aktion kann nicht rückgängig gemacht werden. Bereits aufgegebene Bestellungen sind davon nicht betroffen — Code und Rabatt sind dort separat gespeichert.",
+    "cancel": "Abbrechen",
+    "confirmBtn": "Löschen"
+  },
+  "orderStatus": {
+    "pending": "Zahlung ausstehend",
+    "paid": "Bezahlt",
+    "failed": "Zahlung fehlgeschlagen",
+    "shipped": "Versandt",
+    "delivered": "Zugestellt",
+    "cancelled": "Storniert"
+  },
+  "adminTeam": {
+    "title": "Team",
+    "inviteTitle": "Zugriff gewähren",
+    "emailLabel": "E-Mail",
+    "emailPlaceholder": "email@example.com",
+    "roleLabel": "Rolle",
+    "roleAdmin": "Admin",
+    "roleSuperadmin": "Superadmin",
+    "grantBtn": "Zugriff gewähren",
+    "grantPending": "Wird gewährt…",
+    "currentAdminsTitle": "Aktuelle Admins",
+    "pendingInvitesTitle": "Warten auf Registrierung",
+    "noAdmins": "Noch keine weiteren Admins.",
+    "noInvites": "Keine ausstehenden Einladungen.",
+    "you": "(Sie)",
+    "revokeBtn": "Zugriff entziehen",
+    "cancelInviteBtn": "Abbrechen",
+    "invitedByLabel": "Eingeladen von",
+    "pendingBadge": "Wartet auf Registrierung",
+    "hint": "Sie können Zugriff per E-Mail auch an jemanden vergeben, der sich noch nicht registriert hat — die Rolle wird automatisch bei der ersten Registrierung (Passwort oder Google) angewendet."
+  },
+  "adminAuditLog": {
+    "title": "Aktivitätsprotokoll",
+    "empty": "Noch keine Einträge."
   }
 }

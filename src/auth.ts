@@ -5,6 +5,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { authConfig } from "@/auth.config";
+import { consumeAdminInvite } from "@/lib/admin/admin-invites";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -60,6 +61,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  events: {
+
+    createUser: async ({ user }) => {
+      if (user.id && user.email) {
+        await consumeAdminInvite(user.id, user.email);
+      }
+    },
+  },
   callbacks: {
     ...authConfig.callbacks,
     jwt: ({ token, user }) => {

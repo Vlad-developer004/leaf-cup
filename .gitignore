@@ -46,3 +46,9 @@ next-env.d.ts
 # local AI tool skill caches (auto-installed by `prisma init`, not project source)
 /.claude/skills/
 /skills-lock.json
+
+# internal Claude-session working notes — not meant for the public repo,
+# see README.md/docs/DEPLOYMENT.md for the real documentation
+/CONTEXT.md
+/CLAUDE.md
+/AGENTS.md

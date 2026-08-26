@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -23,6 +24,7 @@ export function DeleteCategoryButton({
   productCount: number;
 }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -48,23 +50,21 @@ export function DeleteCategoryButton({
           size="sm"
           className="text-muted-foreground"
           disabled={productCount > 0}
-          title={productCount > 0 ? "Сначала перенесите товары в другую категорию" : undefined}
+          title={productCount > 0 ? t("adminDeleteCategory.disabledTitle") : undefined}
         >
-          Удалить
+          {t("adminDeleteCategory.deleteBtn")}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Удалить категорию?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Действие необратимо. В категории сейчас нет товаров, так что удаление безопасно.
-          </AlertDialogDescription>
+          <AlertDialogTitle>{t("adminDeleteCategory.dialogTitle")}</AlertDialogTitle>
+          <AlertDialogDescription>{t("adminDeleteCategory.dialogDesc")}</AlertDialogDescription>
         </AlertDialogHeader>
         {error && <p className="text-sm text-destructive">{error}</p>}
         <AlertDialogFooter>
-          <AlertDialogCancel>Отмена</AlertDialogCancel>
+          <AlertDialogCancel>{t("adminDeleteCategory.cancel")}</AlertDialogCancel>
           <Button variant="destructive" disabled={isPending} onClick={handleDelete}>
-            Удалить
+            {t("adminDeleteCategory.confirmBtn")}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

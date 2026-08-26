@@ -81,6 +81,7 @@ export default async function ProductPage({
             images={product.images}
             alt={product.name}
             sizes="(min-width: 768px) 50vw, 100vw"
+            priority
             className="aspect-square w-full rounded-2xl shadow-lg"
             overlay={
               <FavoriteButton

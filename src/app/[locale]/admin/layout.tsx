@@ -17,19 +17,22 @@ export default async function AdminLayout({
   if (!session?.user) {
     redirect("/sign-in");
   }
-  if (session.user.role !== "ADMIN") {
+  if (session.user.role !== "ADMIN" && session.user.role !== "SUPERADMIN") {
     redirect("/");
   }
 
   return (
     <div className="flex flex-1 flex-col">
       <AdminNav
+        showTeam={session.user.role === "SUPERADMIN"}
         dict={{
           dashboard: t("adminNav.dashboard"),
           products: t("adminNav.products"),
           categories: t("adminNav.categories"),
           orders: t("adminNav.orders"),
           promoCodes: t("adminNav.promoCodes"),
+          team: t("adminNav.team"),
+          auditLog: t("adminNav.auditLog"),
         }}
       />
       <div className="mx-auto w-full max-w-6xl flex-1 px-6 py-10">{children}</div>

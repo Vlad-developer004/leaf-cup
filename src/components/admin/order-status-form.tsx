@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { updateOrderStatus } from "@/lib/admin/order-actions";
-import { orderStatusLabels } from "@/lib/order-status";
+import { getOrderStatusLabels } from "@/lib/order-status";
 import { OrderStatus } from "@/generated/prisma/client";
 
 export function OrderStatusForm({
@@ -22,13 +23,16 @@ export function OrderStatusForm({
   allowedNextStatuses: OrderStatus[];
 }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [nextStatus, setNextStatus] = useState<OrderStatus | "">(allowedNextStatuses[0] ?? "");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   if (allowedNextStatuses.length === 0) {
-    return <p className="text-sm text-muted-foreground">Заказ в финальном статусе.</p>;
+    return <p className="text-sm text-muted-foreground">{t("adminOrderStatusForm.finalStatus")}</p>;
   }
+
+  const statusLabels = getOrderStatusLabels(t);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -53,13 +57,13 @@ export function OrderStatusForm({
         <SelectContent>
           {allowedNextStatuses.map((status) => (
             <SelectItem key={status} value={status}>
-              {orderStatusLabels[status]}
+              {statusLabels[status]}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
       <Button type="submit" disabled={isPending}>
-        {isPending ? "Обновляем…" : "Обновить статус"}
+        {isPending ? t("adminOrderStatusForm.submitPending") : t("adminOrderStatusForm.submitIdle")}
       </Button>
       {error && <p className="w-full text-sm text-destructive">{error}</p>}
     </form>

@@ -1,4 +1,8 @@
 {
+  "metadata": {
+    "title": "Leaf & Cup — Online Tea Shop",
+    "description": "Immerse yourself in the world of taste and aroma. We have gathered the best tea varieties, cozy cups, and teapots so that every home tea party brings joy."
+  },
   "about": {
     "title": "About Us",
     "metaTitle": "About Us — Leaf & Cup",
@@ -263,7 +267,8 @@
     "activeEmpty": "No active orders",
     "shipmentsLabel": "Shipments",
     "shipmentsCount": "Shipped: ",
-    "shipmentsEmpty": "Nothing shipped yet"
+    "shipmentsEmpty": "Nothing shipped yet",
+    "orderNumber": "Order #"
   },
   "favorites": {
     "title": "Favorites",
@@ -390,7 +395,9 @@
     "products": "Products",
     "categories": "Categories",
     "orders": "Orders",
-    "promoCodes": "Promo Codes"
+    "promoCodes": "Promo Codes",
+    "team": "Team",
+    "auditLog": "Audit Log"
   },
   "admin": {
     "title": "Admin Panel",
@@ -408,7 +415,8 @@
     "actions": "Actions",
     "edit": "Edit",
     "promoCodesTitle": "Promo Codes",
-    "addPromoCode": "Add promo code"
+    "addPromoCode": "Add promo code",
+    "revenueChartTitle": "Revenue over the last 14 days"
   },
   "adminOrders": {
     "title": "Orders",
@@ -420,7 +428,14 @@
     "status": "Status",
     "actions": "Actions",
     "empty": "No orders yet.",
-    "open": "Open"
+    "open": "Open",
+    "exportCsv": "Export CSV",
+    "searchPlaceholder": "Search by email or order number...",
+    "searchBtn": "Search",
+    "customerAndShipping": "Customer and shipping",
+    "placedOn": "Placed on",
+    "statusChange": "Status change",
+    "items": "Items"
   },
   "adminProducts": {
     "title": "Products",
@@ -437,7 +452,11 @@
     "empty": "Nothing found.",
     "active": "Active",
     "hidden": "Hidden",
-    "edit": "Edit"
+    "edit": "Edit",
+    "exportCsv": "Export CSV",
+    "selectedCount": "Selected: {{count}}",
+    "bulkShow": "Show",
+    "bulkHide": "Hide"
   },
   "adminPromoCodes": {
     "code": "Code",
@@ -452,5 +471,117 @@
     "expired": "Expired",
     "noLimit": "no limit",
     "noExpiry": "no expiry"
+  },
+  "adminCategoryForm": {
+    "titleNew": "New category",
+    "titleEdit": "Edit category",
+    "name": "Name",
+    "slug": "Slug",
+    "description": "Description",
+    "submitCreate": "Create",
+    "submitSave": "Save",
+    "submitPending": "Saving…"
+  },
+  "adminDeleteCategory": {
+    "deleteBtn": "Delete",
+    "disabledTitle": "Move products to another category first",
+    "dialogTitle": "Delete category?",
+    "dialogDesc": "This action cannot be undone. The category currently has no products, so deleting it is safe.",
+    "cancel": "Cancel",
+    "confirmBtn": "Delete"
+  },
+  "adminProductForm": {
+    "titleNew": "New product",
+    "titleEdit": "Edit product",
+    "name": "Name",
+    "slug": "Slug",
+    "description": "Description",
+    "price": "Price",
+    "currency": "Currency",
+    "stock": "Stock",
+    "category": "Category",
+    "images": "Image URLs (one per line)",
+    "featuredLabel": "Show in \"Featured\" on the homepage",
+    "activeLabel": "Active (visible in the catalog)",
+    "submitCreate": "Create product",
+    "submitSave": "Save changes",
+    "submitPending": "Saving…",
+    "cancel": "Cancel"
+  },
+  "adminProductRowActions": {
+    "show": "Show",
+    "hide": "Hide",
+    "hideDialogTitle": "Hide product?",
+    "hideDialogDesc": "The product will disappear from the catalog but stay in the database and in past orders. You can always show it again.",
+    "cancel": "Cancel",
+    "confirmHide": "Hide"
+  },
+  "adminOrderStatusForm": {
+    "finalStatus": "Order is in a final status.",
+    "submitIdle": "Update status",
+    "submitPending": "Updating…"
+  },
+  "adminPromoCodeForm": {
+    "titleNew": "New promo code",
+    "titleEdit": "Edit promo code",
+    "code": "Code",
+    "type": "Discount type",
+    "typePercent": "Percentage",
+    "typeFixed": "Fixed amount",
+    "valuePercent": "Percentage (1–100)",
+    "valueFixed": "Discount amount",
+    "currency": "Currency",
+    "minSubtotal": "Min. order amount",
+    "minSubtotalPlaceholder": "No limit",
+    "maxRedemptions": "Usage limit",
+    "maxRedemptionsPlaceholder": "No limit",
+    "expires": "Expires on",
+    "expiresPlaceholder": "No expiry",
+    "active": "Active",
+    "submitCreate": "Create",
+    "submitSave": "Save",
+    "submitPending": "Saving…"
+  },
+  "adminPromoCodeRowActions": {
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "deleteBtn": "Delete",
+    "dialogTitle": "Delete promo code?",
+    "dialogDesc": "This action cannot be undone. It won't affect orders already placed — the code and discount are stored separately there.",
+    "cancel": "Cancel",
+    "confirmBtn": "Delete"
+  },
+  "orderStatus": {
+    "pending": "Awaiting payment",
+    "paid": "Paid",
+    "failed": "Payment failed",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "adminTeam": {
+    "title": "Team",
+    "inviteTitle": "Grant access",
+    "emailLabel": "Email",
+    "emailPlaceholder": "email@example.com",
+    "roleLabel": "Role",
+    "roleAdmin": "Admin",
+    "roleSuperadmin": "Superadmin",
+    "grantBtn": "Grant access",
+    "grantPending": "Granting…",
+    "currentAdminsTitle": "Current admins",
+    "pendingInvitesTitle": "Pending registration",
+    "noAdmins": "No other admins yet.",
+    "noInvites": "No pending invites.",
+    "you": "(you)",
+    "revokeBtn": "Revoke access",
+    "cancelInviteBtn": "Cancel",
+    "invitedByLabel": "Invited by",
+    "pendingBadge": "Awaiting registration",
+    "hint": "You can grant access by email even to someone who hasn't registered yet — the role is applied automatically on their first registration (password or Google)."
+  },
+  "adminAuditLog": {
+    "title": "Audit Log",
+    "empty": "No entries yet."
   }
 }

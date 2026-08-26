@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import * as z from "zod";
 import { prisma } from "@/lib/prisma";
+import { consumeAdminInvite } from "@/lib/admin/admin-invites";
 
 const RegisterSchema = z.object({
   firstName: z.string().trim().min(1, "Введите имя"),
@@ -28,9 +29,10 @@ export async function POST(request: Request) {
 
   if (!existingUser) {
     const passwordHash = await bcrypt.hash(password, 10);
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: { firstName, lastName, email, passwordHash },
     });
+    await consumeAdminInvite(user.id, email);
   }
 
   return NextResponse.json({ success: true }, { status: 201 });
