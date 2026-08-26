@@ -1,0 +1,42 @@
+import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import * as z from "zod";
+import { prisma } from "@/lib/prisma";
+
+const RegisterSchema = z.object({
+  firstName: z.string().trim().min(1, "Введите имя"),
+  lastName: z.string().trim().min(1, "Введите фамилию"),
+  email: z.email("Введите корректный email").trim().toLowerCase(),
+  password: z.string().min(8, "Минимум 8 символов"),
+});
+
+export async function POST(request: Request) {
+  const body = await request.json().catch(() => null);
+  const parsed = RegisterSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: z.flattenError(parsed.error).fieldErrors },
+      { status: 400 }
+    );
+  }
+
+  const { firstName, lastName, email, password } = parsed.data;
+
+  const existingUser = await prisma.user.findUnique({ where: { email } });
+
+  if (existingUser) {
+    return NextResponse.json(
+      { error: { email: ["Пользователь с таким email уже существует"] } },
+      { status: 409 }
+    );
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  await prisma.user.create({
+    data: { firstName, lastName, email, passwordHash },
+  });
+
+  return NextResponse.json({ success: true }, { status: 201 });
+}
