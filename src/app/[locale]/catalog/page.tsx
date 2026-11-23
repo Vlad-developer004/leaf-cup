@@ -1,7 +1,7 @@
 import { Link } from "@/components/localized-link";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { getCatalogPage } from "@/lib/catalog-cache";
 import { formatPrice } from "@/lib/format";
 import { getCategoryIcon } from "@/lib/category-icons";
 import { getCategories } from "@/lib/get-categories";
@@ -12,7 +12,6 @@ import { TiltCard } from "@/components/tilt-card";
 import { Reveal } from "@/components/reveal";
 import { FavoriteButton } from "@/components/favorite-button";
 import { cn } from "@/lib/utils";
-import { localizeProducts } from "@/lib/translations";
 import initTranslations from "@/lib/i18n";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -35,29 +34,14 @@ export default async function CatalogPage({
   const { category: activeSlug, page: pageParam } = await searchParams;
   const { locale } = await params;
   const { t } = await initTranslations(locale, ["common"]);
-  const where = {
-    isActive: true,
-    ...(activeSlug ? { category: { slug: activeSlug } } : {}),
-  };
-
   const session = await auth();
-  const [categories, totalCount, favoriteIds] = await Promise.all([
+  const [categories, catalog, favoriteIds] = await Promise.all([
     getCategories(locale),
-    prisma.product.count({ where }),
+    getCatalogPage(locale, activeSlug ?? "", Number(pageParam) || 1, PAGE_SIZE),
     session?.user?.id ? getFavoriteProductIds(session.user.id) : Promise.resolve(new Set<string>()),
   ]);
 
-  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-  const page = Math.min(Math.max(1, Number(pageParam) || 1), totalPages);
-
-  const rawProducts = await prisma.product.findMany({
-    where,
-    include: { category: true },
-    orderBy: { createdAt: "asc" },
-    skip: (page - 1) * PAGE_SIZE,
-    take: PAGE_SIZE,
-  });
-  const products = await localizeProducts(rawProducts, locale);
+  const { products, totalPages, page } = catalog;
 
   const activeCategory = categories.find((c) => c.slug === activeSlug);
 

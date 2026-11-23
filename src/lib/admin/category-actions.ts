@@ -1,7 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { CATALOG_TAG } from "@/lib/catalog-cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
@@ -60,6 +61,7 @@ export async function createCategory(input: CategoryFormInput): Promise<ActionRe
 
   revalidatePath("/admin/categories");
   revalidatePath("/catalog");
+  updateTag(CATALOG_TAG);
   return { success: true };
 }
 
@@ -93,6 +95,7 @@ export async function updateCategory(id: string, input: CategoryFormInput): Prom
 
   revalidatePath("/admin/categories");
   revalidatePath("/catalog");
+  updateTag(CATALOG_TAG);
   return { success: true };
 }
 
@@ -125,5 +128,6 @@ export async function deleteCategory(id: string): Promise<ActionResult> {
 
   revalidatePath("/admin/categories");
   revalidatePath("/catalog");
+  updateTag(CATALOG_TAG);
   return { success: true };
 }

@@ -1,7 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { CATALOG_TAG } from "@/lib/catalog-cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
@@ -83,6 +84,7 @@ export async function createProduct(input: ProductFormInput): Promise<ActionResu
 
   revalidatePath("/admin/products");
   revalidatePath("/catalog");
+  updateTag(CATALOG_TAG);
   return { success: true };
 }
 
@@ -113,6 +115,7 @@ export async function updateProduct(id: string, input: ProductFormInput): Promis
 
   revalidatePath("/admin/products");
   revalidatePath("/catalog");
+  updateTag(CATALOG_TAG);
   revalidatePath(`/catalog/${parsed.data.slug}`);
   return { success: true };
 }
@@ -131,6 +134,7 @@ export async function setProductActive(id: string, isActive: boolean) {
 
   revalidatePath("/admin/products");
   revalidatePath("/catalog");
+  updateTag(CATALOG_TAG);
 }
 
 
@@ -151,5 +155,6 @@ export async function bulkSetProductActive(ids: string[], isActive: boolean): Pr
 
   revalidatePath("/admin/products");
   revalidatePath("/catalog");
+  updateTag(CATALOG_TAG);
   return { success: true };
 }
